@@ -62,6 +62,18 @@ class AreaDialog(QDialog):
             self._load(area)
 
     def _setup_ui(self):
+        self.setStyleSheet(f"""
+            QLineEdit, QTextEdit {{
+                background-color: {BG_INPUT};
+                color: {TEXT_PRIMARY};
+                border: 2px solid {BORDER};
+                border-radius: 8px;
+                padding: 4px 8px;
+                font-size: 13px;
+            }}
+            QLabel {{ color: {TEXT_PRIMARY}; background: transparent; }}
+            QCheckBox {{ color: {TEXT_PRIMARY}; }}
+        """)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(12)

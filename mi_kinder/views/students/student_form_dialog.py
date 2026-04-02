@@ -50,7 +50,32 @@ class StudentFormDialog(QDialog):
         scroll.setFrameShape(scroll.Shape.NoFrame)
 
         content = QWidget()
-        content.setStyleSheet(f"background-color: {BG_MAIN};")
+        content.setStyleSheet(f"""
+            background-color: {BG_MAIN};
+            QLineEdit, QDateEdit, QComboBox, QSpinBox, QTextEdit {{
+                background-color: {BG_INPUT};
+                color: {TEXT_PRIMARY};
+                border: 2px solid {BORDER};
+                border-radius: 8px;
+                padding: 4px 8px;
+                font-size: 13px;
+            }}
+            QGroupBox {{
+                color: {TEXT_PRIMARY};
+                border: 1px solid {BORDER};
+                border-radius: 8px;
+                margin-top: 12px;
+                padding-top: 10px;
+                font-weight: bold;
+                font-size: 13px;
+            }}
+            QGroupBox::title {{
+                color: {TEXT_PRIMARY};
+                subcontrol-origin: margin;
+                left: 10px;
+            }}
+            QLabel {{ color: {TEXT_PRIMARY}; background: transparent; }}
+        """)
         layout = QVBoxLayout(content)
         layout.setContentsMargins(24, 16, 24, 16)
         layout.setSpacing(16)

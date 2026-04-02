@@ -24,6 +24,17 @@ class GroupFormDialog(QDialog):
         self.setWindowTitle(title)
         self.setMinimumWidth(380)
         self.setModal(True)
+        self.setStyleSheet(f"""
+            QLineEdit, QDateEdit, QComboBox, QSpinBox {{
+                background-color: {BG_INPUT};
+                color: {TEXT_PRIMARY};
+                border: 2px solid {BORDER};
+                border-radius: 8px;
+                padding: 4px 8px;
+                font-size: 13px;
+            }}
+            QLabel {{ color: {TEXT_PRIMARY}; background: transparent; }}
+        """)
 
         layout = QVBoxLayout(self)
         layout.setSpacing(16)

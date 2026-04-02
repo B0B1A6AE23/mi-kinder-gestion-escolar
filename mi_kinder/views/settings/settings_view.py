@@ -80,6 +80,17 @@ class SchoolYearDialog(QDialog):
             self._load(year)
 
     def _setup_ui(self):
+        self.setStyleSheet(f"""
+            QLineEdit, QDateEdit, QComboBox, QSpinBox, QTextEdit {{
+                background-color: {BG_INPUT};
+                color: {TEXT_PRIMARY};
+                border: 2px solid {BORDER};
+                border-radius: 8px;
+                padding: 4px 8px;
+                font-size: 13px;
+            }}
+            QLabel {{ color: {TEXT_PRIMARY}; background: transparent; }}
+        """)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(14)
@@ -150,6 +161,17 @@ class PeriodDialog(QDialog):
             self._load(period)
 
     def _setup_ui(self):
+        self.setStyleSheet(f"""
+            QLineEdit, QDateEdit, QComboBox, QSpinBox, QTextEdit {{
+                background-color: {BG_INPUT};
+                color: {TEXT_PRIMARY};
+                border: 2px solid {BORDER};
+                border-radius: 8px;
+                padding: 4px 8px;
+                font-size: 13px;
+            }}
+            QLabel {{ color: {TEXT_PRIMARY}; background: transparent; }}
+        """)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(12)

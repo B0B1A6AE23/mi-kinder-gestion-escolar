@@ -65,6 +65,26 @@ class ScaleDialog(QDialog):
             self._load(scale)
 
     def _setup_ui(self):
+        self.setStyleSheet(f"""
+            QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {{
+                background-color: {BG_INPUT};
+                color: {TEXT_PRIMARY};
+                border: 2px solid {BORDER};
+                border-radius: 8px;
+                padding: 4px 8px;
+                font-size: 13px;
+            }}
+            QTableWidget {{ color: {TEXT_PRIMARY}; border: 1px solid {BORDER}; }}
+            QTableWidget::item {{ color: {TEXT_PRIMARY}; padding: 2px; }}
+            QHeaderView::section {{
+                background-color: {PRIMARY};
+                color: white;
+                font-weight: bold;
+                padding: 4px;
+                border: none;
+            }}
+            QLabel {{ color: {TEXT_PRIMARY}; background: transparent; }}
+        """)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(12)

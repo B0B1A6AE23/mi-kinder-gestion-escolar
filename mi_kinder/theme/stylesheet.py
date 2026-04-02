@@ -101,7 +101,13 @@ def get_stylesheet() -> str:
         border-radius: 8px;
         padding: 8px 12px;
         font-size: 14px;
+        color: {TEXT_PRIMARY};
         min-height: 20px;
+    }}
+
+    QDateEdit:focus {{
+        border-color: {BORDER_FOCUS};
+        background-color: {BG_CARD};
     }}
 
     /* ===== COMBOBOX ===== */
@@ -111,6 +117,7 @@ def get_stylesheet() -> str:
         border-radius: 8px;
         padding: 8px 12px;
         font-size: 14px;
+        color: {TEXT_PRIMARY};
         min-height: 20px;
     }}
 
