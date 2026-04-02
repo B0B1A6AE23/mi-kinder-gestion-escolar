@@ -7,6 +7,8 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import pyqtSignal, Qt, QDate
 from PyQt6.QtGui import QFont
 from mi_kinder.models.school_year import SchoolYear, Period
+from mi_kinder.views.evaluations.area_management_view import AreaManagementWidget
+from mi_kinder.views.settings.scale_management_view import ScaleManagementWidget
 from mi_kinder.theme.colors import *
 
 # ── Helpers de estilo ─────────────────────────────────────────
@@ -233,6 +235,10 @@ class SettingsView(QWidget):
         self.tabs.addTab(self._build_school_tab(), "🏫 Escuela")
         self.tabs.addTab(self._build_years_tab(), "📅 Ciclos Escolares")
         self.tabs.addTab(self._build_periods_tab(), "🗓 Periodos")
+        self.area_widget = AreaManagementWidget()
+        self.tabs.addTab(self.area_widget, "📝 Areas")
+        self.scale_widget = ScaleManagementWidget()
+        self.tabs.addTab(self.scale_widget, "📊 Escalas")
         self.tabs.addTab(self._build_backup_tab(), "💾 Respaldo")
         layout.addWidget(self.tabs)
 

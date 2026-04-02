@@ -27,6 +27,27 @@ from mi_kinder.presenters.group_presenter import GroupPresenter
 from mi_kinder.presenters.student_presenter import StudentPresenter
 from mi_kinder.presenters.settings_presenter import SettingsPresenter
 
+# Fase 3: Evaluaciones
+from mi_kinder.views.evaluations.evaluation_grid_view import EvaluationGridView
+from mi_kinder.presenters.evaluation_presenter import (
+    EvaluationPresenter, AreaPresenter, ScalePresenter,
+)
+
+# Fase 4: Reportes
+from mi_kinder.views.reports.report_view import ReportView
+from mi_kinder.presenters.report_presenter import ReportPresenter
+
+# Fase 5: Graficas
+from mi_kinder.views.charts.chart_view import ChartView
+from mi_kinder.presenters.chart_presenter import ChartPresenter
+
+# Fase 6: Asistencia y Usuarios
+from mi_kinder.views.attendance.attendance_view import AttendanceView
+from mi_kinder.presenters.attendance_presenter import AttendancePresenter
+from mi_kinder.views.users.user_management_view import UserManagementView
+from mi_kinder.presenters.user_presenter import UserPresenter
+from mi_kinder.repositories.attendance_repository import AttendanceRepository
+
 
 class MiKinderApp:
     def __init__(self):
@@ -119,13 +140,57 @@ class MiKinderApp:
             if s == "students" else None
         )
 
+        # ── Evaluaciones ──
+        eval_grid = EvaluationGridView(can_edit=True)
+        eval_presenter = EvaluationPresenter(eval_grid, self.conn)
+        self.main_window.add_section("evaluations", eval_grid)
+        self.main_window.sidebar.section_changed.connect(
+            lambda s: eval_presenter.load() if s == "evaluations" else None
+        )
+
+        # ── Reportes (Fase 4) ──
+        report_view = ReportView(is_directora=self.session.is_directora)
+        report_presenter = ReportPresenter(report_view, self.conn)
+        self.main_window.add_section("reports", report_view)
+        self.main_window.sidebar.section_changed.connect(
+            lambda s: report_presenter.load() if s == "reports" else None
+        )
+
+        # ── Graficas (Fase 5) ──
+        chart_view = ChartView(is_directora=self.session.is_directora)
+        chart_presenter = ChartPresenter(chart_view, self.conn)
+        self.main_window.add_section("charts", chart_view)
+        self.main_window.sidebar.section_changed.connect(
+            lambda s: chart_presenter.load() if s == "charts" else None
+        )
+
+        # ── Asistencia (Fase 6) ──
+        att_view = AttendanceView()
+        att_presenter = AttendancePresenter(att_view, self.conn)
+        self.main_window.add_section("attendance", att_view)
+        self.main_window.sidebar.section_changed.connect(
+            lambda s: att_presenter.load() if s == "attendance" else None
+        )
+
         # ── Ajustes (solo directora) ──
         if self.session.is_directora:
             settings_view = SettingsView()
             settings_presenter = SettingsPresenter(settings_view, self.conn)
+            area_presenter = AreaPresenter(settings_view.area_widget, self.conn)
+            scale_presenter = ScalePresenter(settings_view.scale_widget, self.conn)
             self.main_window.add_section("settings", settings_view)
             self.main_window.sidebar.section_changed.connect(
-                lambda s: settings_presenter.load() if s == "settings" else None
+                lambda s: (settings_presenter.load(), area_presenter.load(), scale_presenter.load())
+                if s == "settings" else None
+            )
+
+        # ── Usuarios (solo directora, Fase 6) ──
+        if self.session.is_directora:
+            user_view = UserManagementView()
+            user_presenter = UserPresenter(user_view, self.conn)
+            self.main_window.add_section("users", user_view)
+            self.main_window.sidebar.section_changed.connect(
+                lambda s: user_presenter.load() if s == "users" else None
             )
 
         # Dashboard stats
@@ -147,12 +212,23 @@ class MiKinderApp:
         student_repo = StudentRepository(self.conn)
         group_repo = GroupRepository(self.conn)
         user_repo = UserRepository(self.conn)
+        att_repo = AttendanceRepository(self.conn)
 
         total_students = student_repo.count_all(year_id)
         total_groups = len(group_repo.get_all(year_id))
         total_teachers = len(user_repo.get_maestras())
 
-        self.main_window.dashboard.update_stats(total_students, total_groups, total_teachers, 0)
+        # Asistencia de hoy promedio de todos los grupos
+        from datetime import date
+        today = date.today().isoformat()
+        groups = group_repo.get_all(year_id)
+        if groups:
+            rates = [att_repo.get_attendance_rate(g.id, today, today) for g in groups]
+            avg_att = sum(rates) / len(rates) if rates else 0
+        else:
+            avg_att = 0
+
+        self.main_window.dashboard.update_stats(total_students, total_groups, total_teachers, avg_att)
 
     def cleanup(self):
         close_connection()
