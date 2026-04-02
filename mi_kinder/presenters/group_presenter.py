@@ -28,6 +28,10 @@ class GroupPresenter:
         self._view.load_groups(groups)
 
     def _on_new(self):
+        if not self._session.current_year:
+            alert(self._view, "Sin ciclo activo",
+                  "Primero crea y activa un ciclo escolar en Ajustes.")
+            return
         teachers = self._user_repo.get_maestras()
         dlg = GroupFormDialog(self._view, teachers=teachers)
         if dlg.exec():
@@ -44,6 +48,10 @@ class GroupPresenter:
             self.load()
 
     def _on_edit(self, group_id: int):
+        if not self._session.current_year:
+            alert(self._view, "Sin ciclo activo",
+                  "Primero crea y activa un ciclo escolar en Ajustes.")
+            return
         group = self._group_repo.get_by_id(group_id)
         if not group:
             return

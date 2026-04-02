@@ -122,7 +122,9 @@ class AttendanceView(QWidget):
                 border: 1px solid {BORDER};
                 border-radius: 8px;
                 alternate-background-color: {BG_INPUT};
+                color: {TEXT_PRIMARY};
             }}
+            QTableWidget::item {{ color: {TEXT_PRIMARY}; }}
             QHeaderView::section {{
                 background-color: {PRIMARY};
                 color: white;

@@ -81,8 +81,9 @@ class EvaluationGridView(QWidget):
                 border-radius: 8px;
                 gridline-color: {BORDER};
                 alternate-background-color: {BG_INPUT};
+                color: {TEXT_PRIMARY};
             }}
-            QTableWidget::item {{ padding: 4px; }}
+            QTableWidget::item {{ padding: 4px; color: {TEXT_PRIMARY}; }}
             QHeaderView::section {{
                 background-color: {PRIMARY};
                 color: white;

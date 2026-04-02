@@ -78,9 +78,9 @@ class ReportView(QWidget):
 
         self.student_list = QListWidget()
         self.student_list.setStyleSheet(f"""
-            QListWidget {{ border: 1px solid {BORDER}; border-radius: 8px; background: {BG_CARD}; }}
-            QListWidget::item {{ padding: 8px; border-bottom: 1px solid {BORDER}; }}
-            QListWidget::item:selected {{ background-color: {PRIMARY_LIGHT}; }}
+            QListWidget {{ border: 1px solid {BORDER}; border-radius: 8px; background: {BG_CARD}; color: {TEXT_PRIMARY}; }}
+            QListWidget::item {{ padding: 8px; border-bottom: 1px solid {BORDER}; color: {TEXT_PRIMARY}; }}
+            QListWidget::item:selected {{ background-color: {PRIMARY_LIGHT}; color: {TEXT_PRIMARY}; }}
         """)
         layout.addWidget(self.student_list)
 
@@ -179,11 +179,8 @@ class ReportView(QWidget):
             self.student_list.addItem(item)
 
     def _on_ind_group_changed(self, index):
-        gid = self.ind_group_combo.currentData()
-        if gid:
-            from mi_kinder.services.session import Session
-            # Signal handled by presenter
-            pass
+        # Handled by presenter via ind_group_combo.currentIndexChanged
+        pass
 
     def _on_gen_individual(self):
         item = self.student_list.currentItem()

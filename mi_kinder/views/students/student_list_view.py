@@ -97,13 +97,22 @@ class StudentListView(QWidget):
                 border: 1px solid {BORDER};
                 border-radius: 10px;
                 font-size: 13px;
+                color: {TEXT_PRIMARY};
             }}
             QTableWidget::item {{
                 padding: 4px 8px;
+                color: {TEXT_PRIMARY};
             }}
             QTableWidget::item:selected {{
                 background-color: {PRIMARY_LIGHT};
                 color: {TEXT_PRIMARY};
+            }}
+            QHeaderView::section {{
+                background-color: {PRIMARY};
+                color: white;
+                font-weight: bold;
+                padding: 6px;
+                border: none;
             }}
         """)
         self.table.verticalHeader().setDefaultSectionSize(52)

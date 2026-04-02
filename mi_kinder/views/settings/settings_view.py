@@ -292,8 +292,8 @@ class SettingsView(QWidget):
 
         self.years_list = QListWidget()
         self.years_list.setStyleSheet(f"""
-            QListWidget {{ border: 1px solid {BORDER}; border-radius: 8px; background: {BG_CARD}; }}
-            QListWidget::item {{ padding: 10px; border-bottom: 1px solid {BORDER}; }}
+            QListWidget {{ border: 1px solid {BORDER}; border-radius: 8px; background: {BG_CARD}; color: {TEXT_PRIMARY}; }}
+            QListWidget::item {{ padding: 10px; border-bottom: 1px solid {BORDER}; color: {TEXT_PRIMARY}; }}
             QListWidget::item:selected {{ background-color: {PRIMARY_LIGHT}; color: {TEXT_PRIMARY}; }}
         """)
         layout.addWidget(self.years_list)
@@ -322,8 +322,9 @@ class SettingsView(QWidget):
 
         self.periods_list = QListWidget()
         self.periods_list.setStyleSheet(f"""
-            QListWidget {{ border: 1px solid {BORDER}; border-radius: 8px; background: {BG_CARD}; }}
-            QListWidget::item {{ padding: 10px; border-bottom: 1px solid {BORDER}; }}
+            QListWidget {{ border: 1px solid {BORDER}; border-radius: 8px; background: {BG_CARD}; color: {TEXT_PRIMARY}; }}
+            QListWidget::item {{ padding: 10px; border-bottom: 1px solid {BORDER}; color: {TEXT_PRIMARY}; }}
+            QListWidget::item:selected {{ background-color: {PRIMARY_LIGHT}; color: {TEXT_PRIMARY}; }}
         """)
         layout.addWidget(self.periods_list)
         return w

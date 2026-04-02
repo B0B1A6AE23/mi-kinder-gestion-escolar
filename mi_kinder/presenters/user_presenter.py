@@ -22,7 +22,7 @@ class UserPresenter:
         view.toggle_user_requested.connect(self._on_toggle)
 
     def load(self):
-        maestras = self._user_repo.get_maestras()
+        maestras = self._user_repo.get_maestras(active_only=False)
         user_data = []
         for u in maestras:
             group_ids = self._user_repo.get_groups_for_user(u.id)

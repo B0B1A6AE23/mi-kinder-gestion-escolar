@@ -125,7 +125,11 @@ class StudentDetailView(QWidget):
         self.eval_table.setAlternatingRowColors(True)
         self.eval_table.verticalHeader().setVisible(False)
         self.eval_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch)
-        self.eval_table.setStyleSheet(f"border: none; alternate-background-color: {BG_INPUT};")
+        self.eval_table.setStyleSheet(f"""
+            QTableWidget {{ border: none; alternate-background-color: {BG_INPUT}; color: {TEXT_PRIMARY}; }}
+            QTableWidget::item {{ color: {TEXT_PRIMARY}; }}
+            QHeaderView::section {{ background-color: {PRIMARY}; color: white; font-weight: bold; padding: 4px; border: none; }}
+        """)
         layout.addWidget(self.eval_table)
         return w
 

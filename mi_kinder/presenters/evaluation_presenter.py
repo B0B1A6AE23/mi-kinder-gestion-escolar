@@ -108,6 +108,8 @@ class EvaluationPresenter:
             from openpyxl import Workbook
             from PyQt6.QtWidgets import QFileDialog
             year = self._session.current_year
+            if not year:
+                return
             students = self._student_repo.get_by_group(self._current_group_id)
             areas = self._area_repo.get_by_school_year(year.id)
             evals = self._eval_repo.get_for_group_period(

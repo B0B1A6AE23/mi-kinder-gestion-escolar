@@ -99,7 +99,7 @@ class UserFormDialog(QDialog):
         layout.addWidget(grp_lbl)
 
         self.group_list = QListWidget()
-        self.group_list.setStyleSheet(f"border: 1px solid {BORDER}; border-radius: 6px;")
+        self.group_list.setStyleSheet(f"border: 1px solid {BORDER}; border-radius: 6px; color: {TEXT_PRIMARY}; background: {BG_CARD};")
         self.group_list.setMaximumHeight(150)
         for g in self._groups:
             item = QListWidgetItem(g.name)
@@ -200,6 +200,12 @@ class UserManagementView(QWidget):
                 border: 1px solid {BORDER};
                 border-radius: 8px;
                 alternate-background-color: {BG_INPUT};
+                color: {TEXT_PRIMARY};
+                font-size: 13px;
+            }}
+            QTableWidget::item {{
+                color: {TEXT_PRIMARY};
+                padding: 4px 8px;
             }}
             QHeaderView::section {{
                 background-color: {PRIMARY};

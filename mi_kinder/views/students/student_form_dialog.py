@@ -1,7 +1,7 @@
 """Dialogo para crear/editar alumno."""
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QFormLayout, QScrollArea,
-    QLineEdit, QComboBox, QDialogButtonBox, QLabel, QWidget,
+    QLineEdit, QComboBox, QPushButton, QLabel, QWidget,
     QDateEdit, QTextEdit, QGroupBox,
 )
 from PyQt6.QtCore import Qt, QDate
