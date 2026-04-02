@@ -1,0 +1,11 @@
+[project]
+name = "mi-kinder"
+version = "1.0.0"
+description = "Sistema de Gestion Escolar para Kinder"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["mi_kinder/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
