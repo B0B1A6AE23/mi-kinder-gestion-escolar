@@ -1,11 +1,5 @@
 [project]
-name = "mi-kinder"
+name = "mi-kinder-web"
 version = "1.0.0"
-description = "Sistema de Gestion Escolar para Kinder"
+description = "Sistema de Gestion Escolar Web - Colegio CAPI"
 requires-python = ">=3.10"
-
-[tool.pytest.ini_options]
-testpaths = ["mi_kinder/tests"]
-python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
