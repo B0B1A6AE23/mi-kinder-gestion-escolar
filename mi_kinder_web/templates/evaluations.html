@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}Evaluaciones - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Evaluaciones</h1>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-body">
+    <form method="GET" action="{{ url_for('evaluations.index') }}" class="filter-form">
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label for="group_id" class="form-label">Grupo</label>
+          <select id="group_id" name="group_id" class="form-control">
+            <option value="">-- Seleccionar Grupo --</option>
+            {% for g in groups %}
+            <option value="{{ g.id }}" {{ 'selected' if selected_group == g.id }}>{{ g.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="period_id" class="form-label">Periodo</label>
+          <select id="period_id" name="period_id" class="form-control">
+            <option value="">-- Seleccionar Periodo --</option>
+            {% for p in periods %}
+            <option value="{{ p.id }}" {{ 'selected' if selected_period == p.id }}>{{ p.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group" style="align-self:flex-end;">
+          <button type="submit" class="btn btn-primary">Cargar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if selected_group and selected_period and students %}
+<form method="POST" action="{{ url_for('evaluations.save') }}">
+  <input type="hidden" name="group_id" value="{{ selected_group }}">
+  <input type="hidden" name="period_id" value="{{ selected_period }}">
+
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Evaluar ({{ students|length }} alumnos, {{ areas|length }} areas)</h2>
+      <button type="submit" class="btn btn-primary">Guardar Evaluaciones</button>
+    </div>
+    <div class="card-body">
+      {% if not areas %}
+      <div class="empty-state">
+        <p>No hay areas de evaluacion configuradas. Ve a <a href="{{ url_for('settings.index') }}">Ajustes</a> para crearlas.</p>
+      </div>
+      {% elif not scale_levels %}
+      <div class="empty-state">
+        <p>No hay escala de calificacion configurada. Ve a <a href="{{ url_for('settings.index') }}">Ajustes</a>.</p>
+      </div>
+      {% else %}
+
+      <!-- Legend -->
+      <div class="eval-legend">
+        <span>Escala:</span>
+        {% for level in scale_levels %}
+        <span class="badge" style="background-color: {{ level.color or '#888' }}; color: white;">
+          {{ level.label }}
+        </span>
+        {% endfor %}
+      </div>
+
+      <div class="table-responsive">
+        <table class="table eval-table">
+          <thead>
+            <tr>
+              <th>Alumno</th>
+              {% for a in areas %}
+              <th class="text-center eval-area-header">{{ a.name }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in students %}
+            <tr>
+              <td class="student-name-cell">
+                <strong>{{ s.last_name }} {{ s.second_last_name or '' }}, {{ s.first_name }}</strong>
+              </td>
+              {% for a in areas %}
+              {% set key = (s.id, a.id) %}
+              {% set existing = evaluations_map.get(key, {}) %}
+              <td class="text-center eval-cell">
+                <select name="grade_{{ s.id }}_{{ a.id }}" class="form-control form-control-sm eval-select">
+                  <option value="">---</option>
+                  {% for level in scale_levels %}
+                  <option value="{{ level.id }}"
+                    {{ 'selected' if existing.get('grade_level_id') == level.id }}
+                    data-color="{{ level.color }}">
+                    {{ level.label }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="form-actions" style="margin-top: 1rem;">
+        <button type="submit" class="btn btn-primary btn-block">Guardar Evaluaciones</button>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</form>
+{% elif selected_group and selected_period %}
+<div class="empty-state">
+  <div class="empty-icon">📝</div>
+  <h3>Sin alumnos</h3>
+  <p>El grupo seleccionado no tiene alumnos activos.</p>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">📝</div>
+  <h3>Selecciona grupo y periodo</h3>
+  <p>Elige un grupo y un periodo para comenzar a evaluar.</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.eval-select').forEach(function(sel) {
+  sel.addEventListener('change', function() {
+    var option = sel.options[sel.selectedIndex];
+    var color = option.getAttribute('data-color');
+    if (color) {
+      sel.style.backgroundColor = color;
+      sel.style.color = 'white';
+    } else {
+      sel.style.backgroundColor = '';
+      sel.style.color = '';
+    }
+  });
+  // Trigger on load
+  var ev = new Event('change');
+  sel.dispatchEvent(ev);
+});
+</script>
+{% endblock %}

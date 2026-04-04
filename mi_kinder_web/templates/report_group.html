@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Reporte {{ group.name }} - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{{ url_for('reports.index') }}" class="btn btn-ghost btn-sm">&larr; Reportes</a>
+    <h1 class="page-title">Reporte Grupal: {{ group.name }}</h1>
+    <p class="page-subtitle">
+      {% if group.teacher_name %}Maestra: {{ group.teacher_name }} &middot; {% endif %}
+      {{ students|length }} alumnos
+    </p>
+  </div>
+  <a href="{{ url_for('reports.group_pdf', group_id=group.id) }}" class="btn btn-primary">Descargar PDF</a>
+</div>
+
+<!-- Student Ranking -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Ranking de Alumnos</h2>
+  </div>
+  <div class="card-body">
+    {% if student_averages %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Alumno</th>
+            <th class="text-center">Promedio</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sa in student_averages %}
+          <tr>
+            <td>
+              {% if loop.index <= 3 %}
+              <span class="rank-medal rank-{{ loop.index }}">{{ loop.index }}</span>
+              {% else %}
+              {{ loop.index }}
+              {% endif %}
+            </td>
+            <td><strong>{{ sa.name }}</strong></td>
+            <td class="text-center">
+              <span class="badge badge-{{ 'success' if sa.average >= 2.5 else ('warning' if sa.average >= 1.5 else 'error') }}">
+                {{ '%.1f'|format(sa.average) }}
+              </span>
+            </td>
+            <td>
+              <a href="{{ url_for('reports.individual', student_id=sa.student_id) }}" class="btn btn-xs btn-outline">Boleta</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted text-center">No hay evaluaciones registradas.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

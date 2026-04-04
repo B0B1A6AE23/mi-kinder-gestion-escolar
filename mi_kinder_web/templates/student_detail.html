@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}{{ student.first_name }} {{ student.last_name }} - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{{ url_for('students.index') }}" class="btn btn-ghost btn-sm">&larr; Alumnos</a>
+    <h1 class="page-title">{{ student.first_name }} {{ student.last_name }} {{ student.second_last_name or '' }}</h1>
+    <p class="page-subtitle">{{ student.group_name }}</p>
+  </div>
+  <div class="header-actions">
+    <a href="{{ url_for('students.edit', student_id=student.id) }}" class="btn btn-outline">Editar</a>
+    <a href="{{ url_for('reports.individual', student_id=student.id) }}" class="btn btn-outline">Boleta</a>
+    <a href="{{ url_for('reports.individual_pdf', student_id=student.id) }}" class="btn btn-primary">Descargar PDF</a>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <!-- Personal Info -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Datos Personales</h2>
+    </div>
+    <div class="card-body">
+      <dl class="detail-list">
+        <div class="detail-item">
+          <dt>CURP</dt>
+          <dd><code>{{ student.curp or '---' }}</code></dd>
+        </div>
+        <div class="detail-item">
+          <dt>Fecha de Nacimiento</dt>
+          <dd>{{ student.birth_date|fecha_mx if student.birth_date else '---' }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Genero</dt>
+          <dd>{{ 'Nino' if student.gender == 'M' else ('Nina' if student.gender == 'F' else '---') }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Fecha de Inscripcion</dt>
+          <dd>{{ student.enrollment_date|fecha_mx if student.enrollment_date else '---' }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Tipo de Sangre</dt>
+          <dd>{{ student.blood_type or '---' }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Alergias</dt>
+          <dd>{{ student.allergies or 'Ninguna' }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Notas Medicas</dt>
+          <dd>{{ student.medical_notes or 'Ninguna' }}</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Guardian Info -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Tutor / Responsable</h2>
+    </div>
+    <div class="card-body">
+      <dl class="detail-list">
+        <div class="detail-item">
+          <dt>Nombre</dt>
+          <dd>{{ student.guardian_name or '---' }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Telefono</dt>
+          <dd>{{ student.guardian_phone or '---' }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Email</dt>
+          <dd>{{ student.guardian_email or '---' }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Direccion</dt>
+          <dd>{{ student.address or '---' }}</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Attendance Summary -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Asistencia</h2>
+    </div>
+    <div class="card-body">
+      <div class="attendance-summary">
+        <div class="att-stat att-present">
+          <span class="att-value">{{ att_summary.get('present', 0) }}</span>
+          <span class="att-label">Presentes</span>
+        </div>
+        <div class="att-stat att-absent">
+          <span class="att-value">{{ att_summary.get('absent', 0) }}</span>
+          <span class="att-label">Faltas</span>
+        </div>
+        <div class="att-stat att-late">
+          <span class="att-value">{{ att_summary.get('late', 0) }}</span>
+          <span class="att-label">Retardos</span>
+        </div>
+        <div class="att-stat att-justified">
+          <span class="att-value">{{ att_summary.get('justified', 0) }}</span>
+          <span class="att-label">Justificadas</span>
+        </div>
+      </div>
+      {% set total = att_summary.get('present', 0) + att_summary.get('absent', 0) + att_summary.get('late', 0) + att_summary.get('justified', 0) %}
+      {% if total > 0 %}
+      {% set rate = (att_summary.get('present', 0) * 100 / total)|round(1) %}
+      <div class="progress-bar-container" style="margin-top: 1rem;">
+        <div class="progress-bar" style="width: {{ rate }}%"></div>
+      </div>
+      <p class="text-center text-muted" style="margin-top:0.5rem;">{{ rate }}% de asistencia</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Transfer -->
+  {% if is_directora %}
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Acciones</h2>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('students.toggle_active', student_id=student.id) }}" style="margin-bottom:1rem;">
+        <button type="submit" class="btn btn-{{ 'error' if student.is_active else 'success' }} btn-block"
+                onclick="return confirm('{{ 'Dar de baja al alumno?' if student.is_active else 'Reactivar al alumno?' }}')">
+          {{ 'Dar de Baja' if student.is_active else 'Reactivar Alumno' }}
+        </button>
+      </form>
+
+      <h3 style="margin: 1rem 0 0.5rem; font-size: 0.95rem; color: var(--ink);">Transferir a otro grupo</h3>
+      <form method="POST" action="{{ url_for('students.transfer', student_id=student.id) }}">
+        <div class="form-group">
+          <select name="to_group_id" class="form-control" required>
+            <option value="">-- Seleccionar grupo --</option>
+            {% for g in [] %}
+            <option value="{{ g.id }}">{{ g.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <input type="text" name="reason" class="form-control" placeholder="Razon de transferencia">
+        </div>
+        <button type="submit" class="btn btn-outline btn-block">Transferir</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Evaluations -->
+{% if evaluations %}
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Evaluaciones</h2>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Periodo</th>
+            <th>Area</th>
+            <th>Calificacion</th>
+            <th>Observaciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ev in evaluations %}
+          <tr>
+            <td>{{ ev.period_name }}</td>
+            <td>{{ ev.area_name }}</td>
+            <td>
+              {% if ev.grade_label %}
+              <span class="badge" style="background-color: {{ ev.grade_color or 'var(--ink-lighter)' }}; color: white;">
+                {{ ev.grade_label }}
+              </span>
+              {% else %}
+              ---
+              {% endif %}
+            </td>
+            <td>{{ ev.observations or '---' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Observations -->
+{% if observations %}
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Observaciones</h2>
+  </div>
+  <div class="card-body">
+    {% for obs in observations %}
+    <div class="observation-item">
+      <div class="obs-meta">
+        <span class="obs-date">{{ obs.created_at[:10]|fecha_mx }}</span>
+        <span class="badge badge-outline">{{ obs.category }}</span>
+        {% if obs.author_name %}
+        <span class="text-muted">por {{ obs.author_name }}</span>
+        {% endif %}
+      </div>
+      <p class="obs-content">{{ obs.content }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

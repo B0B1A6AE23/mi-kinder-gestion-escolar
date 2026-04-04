@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Mi Perfil - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Mi Perfil</h1>
+</div>
+
+<div class="detail-grid" style="max-width: 800px;">
+  <!-- Profile Info -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Informacion</h2>
+    </div>
+    <div class="card-body">
+      <dl class="detail-list">
+        <div class="detail-item">
+          <dt>Nombre</dt>
+          <dd>{{ user.full_name }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Usuario</dt>
+          <dd><code>{{ user.username }}</code></dd>
+        </div>
+        <div class="detail-item">
+          <dt>Rol</dt>
+          <dd>
+            <span class="badge badge-{{ 'info' if user.role == 'directora' else 'outline' }}">
+              {{ user.role|capitalize }}
+            </span>
+          </dd>
+        </div>
+        <div class="detail-item">
+          <dt>Grupos Asignados</dt>
+          <dd>
+            {% if groups %}
+              {% for g in groups %}
+              <span class="badge badge-outline">{{ g.name }}</span>
+              {% endfor %}
+            {% else %}
+            <span class="text-muted">Sin grupos asignados</span>
+            {% endif %}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Update Form -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Actualizar Perfil</h2>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('profile.update') }}">
+        <div class="form-group">
+          <label for="full_name" class="form-label">Nombre Completo</label>
+          <input type="text" id="full_name" name="full_name" class="form-control"
+                 value="{{ user.full_name }}">
+        </div>
+
+        <h3 class="form-section-title" style="margin-top:1.5rem;">Cambiar Contrasena</h3>
+
+        <div class="form-group">
+          <label for="current_password" class="form-label">Contrasena Actual</label>
+          <input type="password" id="current_password" name="current_password" class="form-control"
+                 autocomplete="current-password">
+        </div>
+        <div class="form-group">
+          <label for="new_password" class="form-label">Nueva Contrasena</label>
+          <input type="password" id="new_password" name="new_password" class="form-control"
+                 autocomplete="new-password" placeholder="Minimo 4 caracteres">
+        </div>
+        <div class="form-group">
+          <label for="confirm_password" class="form-label">Confirmar Nueva Contrasena</label>
+          <input type="password" id="confirm_password" name="confirm_password" class="form-control"
+                 autocomplete="new-password">
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

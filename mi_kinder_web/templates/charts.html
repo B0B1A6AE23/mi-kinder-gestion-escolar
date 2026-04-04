@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Graficas - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Graficas</h1>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-body">
+    <div class="form-row">
+      <div class="form-group" style="flex:1;">
+        <label for="chart_group" class="form-label">Grupo</label>
+        <select id="chart_group" class="form-control">
+          <option value="">-- Seleccionar --</option>
+          {% for g in groups %}
+          <option value="{{ g.id }}">{{ g.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label for="chart_period" class="form-label">Periodo</label>
+        <select id="chart_period" class="form-control">
+          <option value="">-- Seleccionar --</option>
+          {% for p in periods %}
+          <option value="{{ p.id }}">{{ p.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart containers -->
+<div class="cards-grid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Promedios por Area</h2>
+      <button class="btn btn-sm btn-primary" onclick="loadGroupAverages()">Generar</button>
+    </div>
+    <div class="card-body text-center">
+      <div id="chart-averages" class="chart-container">
+        <p class="text-muted">Selecciona grupo y periodo, luego presiona Generar.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Distribucion de Niveles</h2>
+      <button class="btn btn-sm btn-primary" onclick="loadDistribution()">Generar</button>
+    </div>
+    <div class="card-body text-center">
+      <div id="chart-distribution" class="chart-container">
+        <p class="text-muted">Selecciona grupo y periodo, luego presiona Generar.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Attendance Chart -->
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Asistencia Diaria</h2>
+  </div>
+  <div class="card-body">
+    <div class="form-row" style="margin-bottom: 1rem;">
+      <div class="form-group" style="flex:1;">
+        <label class="form-label">Fecha Inicio</label>
+        <input type="date" id="att_start" class="form-control">
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label class="form-label">Fecha Fin</label>
+        <input type="date" id="att_end" class="form-control">
+      </div>
+      <div class="form-group" style="align-self:flex-end;">
+        <button class="btn btn-primary" onclick="loadAttendanceChart()">Generar</button>
+      </div>
+    </div>
+    <div id="chart-attendance" class="chart-container text-center">
+      <p class="text-muted">Selecciona grupo y rango de fechas.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getParams() {
+  return {
+    group_id: document.getElementById('chart_group').value,
+    period_id: document.getElementById('chart_period').value,
+  };
+}
+
+function showChart(containerId, data) {
+  var container = document.getElementById(containerId);
+  if (data.image) {
+    container.innerHTML = '<img src="data:image/png;base64,' + data.image + '" style="max-width:100%; height:auto;" alt="Grafica">';
+  } else {
+    container.innerHTML = '<p class="text-muted">' + (data.message || 'Sin datos disponibles') + '</p>';
+  }
+}
+
+function showLoading(containerId) {
+  document.getElementById(containerId).innerHTML = '<p class="text-muted">Generando grafica...</p>';
+}
+
+function loadGroupAverages() {
+  var p = getParams();
+  if (!p.group_id || !p.period_id) { alert('Selecciona grupo y periodo.'); return; }
+  showLoading('chart-averages');
+  fetch('/charts/group-averages?group_id=' + p.group_id + '&period_id=' + p.period_id)
+    .then(function(r) { return r.json(); })
+    .then(function(data) { showChart('chart-averages', data); })
+    .catch(function() { document.getElementById('chart-averages').innerHTML = '<p class="text-error">Error al generar.</p>'; });
+}
+
+function loadDistribution() {
+  var p = getParams();
+  if (!p.group_id || !p.period_id) { alert('Selecciona grupo y periodo.'); return; }
+  showLoading('chart-distribution');
+  fetch('/charts/group-distribution?group_id=' + p.group_id + '&period_id=' + p.period_id)
+    .then(function(r) { return r.json(); })
+    .then(function(data) { showChart('chart-distribution', data); })
+    .catch(function() { document.getElementById('chart-distribution').innerHTML = '<p class="text-error">Error al generar.</p>'; });
+}
+
+function loadAttendanceChart() {
+  var groupId = document.getElementById('chart_group').value;
+  var start = document.getElementById('att_start').value;
+  var end = document.getElementById('att_end').value;
+  if (!groupId || !start || !end) { alert('Selecciona grupo y rango de fechas.'); return; }
+  showLoading('chart-attendance');
+  fetch('/charts/attendance-chart?group_id=' + groupId + '&start_date=' + start + '&end_date=' + end)
+    .then(function(r) { return r.json(); })
+    .then(function(data) { showChart('chart-attendance', data); })
+    .catch(function() { document.getElementById('chart-attendance').innerHTML = '<p class="text-error">Error al generar.</p>'; });
+}
+</script>
+{% endblock %}

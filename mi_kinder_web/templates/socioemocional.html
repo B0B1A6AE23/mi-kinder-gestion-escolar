@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Socioemocional - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Seguimiento Socioemocional</h1>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-body">
+    <form method="GET" action="{{ url_for('socioemocional.index') }}" class="filter-form">
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label for="group_id" class="form-label">Grupo</label>
+          <select id="group_id" name="group_id" class="form-control" onchange="this.form.submit()">
+            <option value="">-- Seleccionar Grupo --</option>
+            {% for g in groups %}
+            <option value="{{ g.id }}" {{ 'selected' if selected_group == g.id }}>{{ g.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="period_id" class="form-label">Periodo</label>
+          <select id="period_id" name="period_id" class="form-control" onchange="this.form.submit()">
+            <option value="">Todos los periodos</option>
+            {% for p in periods %}
+            <option value="{{ p.id }}" {{ 'selected' if selected_period == p.id }}>{{ p.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if selected_group and students %}
+<div class="socio-grid">
+  {% for s in students %}
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">
+        {{ s.first_name }} {{ s.last_name }} {{ s.second_last_name or '' }}
+      </h3>
+    </div>
+    <div class="card-body">
+      <!-- Existing observations -->
+      {% set obs_list = observations_map.get(s.id, []) %}
+      {% if obs_list %}
+      <div class="observations-list" style="margin-bottom: 1rem; max-height: 200px; overflow-y: auto;">
+        {% for obs in obs_list %}
+        <div class="observation-item observation-item--compact">
+          <div class="obs-meta">
+            <span class="obs-date">{{ obs.created_at[:10]|fecha_mx }}</span>
+            <span class="badge badge-outline badge-sm">{{ obs.category }}</span>
+            {% if obs.author_name %}
+            <span class="text-muted text-sm">{{ obs.author_name }}</span>
+            {% endif %}
+          </div>
+          <p class="obs-content">{{ obs.content }}</p>
+          <form method="POST" action="{{ url_for('socioemocional.delete_observation', obs_id=obs.id) }}" style="display:inline;">
+            <input type="hidden" name="group_id" value="{{ selected_group }}">
+            <input type="hidden" name="period_id" value="{{ selected_period or '' }}">
+            <button type="submit" class="btn btn-xs btn-ghost text-error"
+                    onclick="return confirm('Eliminar esta observacion?')">Eliminar</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-muted text-sm" style="margin-bottom: 1rem;">Sin observaciones registradas.</p>
+      {% endif %}
+
+      <!-- Add new observation -->
+      <form method="POST" action="{{ url_for('socioemocional.add_observation') }}">
+        <input type="hidden" name="student_id" value="{{ s.id }}">
+        <input type="hidden" name="group_id" value="{{ selected_group }}">
+        <input type="hidden" name="period_id" value="{{ selected_period or '' }}">
+        <div class="form-group">
+          <select name="category" class="form-control form-control-sm">
+            <option value="general">General</option>
+            <option value="conducta">Conducta</option>
+            <option value="emocional">Emocional</option>
+            <option value="social">Social</option>
+            <option value="academico">Academico</option>
+            <option value="familiar">Familiar</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <textarea name="content" class="form-control form-control-sm" rows="2"
+                    placeholder="Escribir observacion..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-sm btn-primary">Agregar</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% elif selected_group %}
+<div class="empty-state">
+  <div class="empty-icon">💚</div>
+  <h3>Sin alumnos</h3>
+  <p>Este grupo no tiene alumnos activos.</p>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">💚</div>
+  <h3>Selecciona un grupo</h3>
+  <p>Elige un grupo para ver y registrar observaciones socioemocionales.</p>
+</div>
+{% endif %}
+{% endblock %}

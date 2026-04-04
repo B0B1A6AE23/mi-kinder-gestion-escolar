@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Boleta - {{ student.first_name }} {{ student.last_name }} - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{{ url_for('reports.index') }}" class="btn btn-ghost btn-sm">&larr; Reportes</a>
+    <h1 class="page-title">Boleta de Evaluacion</h1>
+    <p class="page-subtitle">{{ student.first_name }} {{ student.last_name }} {{ student.second_last_name or '' }}</p>
+  </div>
+  <div class="header-actions">
+    <a href="{{ url_for('reports.individual_pdf', student_id=student.id) }}" class="btn btn-primary">Descargar PDF</a>
+  </div>
+</div>
+
+<!-- Student Info -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-body">
+    <div class="boleta-info">
+      <div class="info-pair">
+        <span class="info-label">Alumno:</span>
+        <span class="info-value">{{ student.first_name }} {{ student.last_name }} {{ student.second_last_name or '' }}</span>
+      </div>
+      <div class="info-pair">
+        <span class="info-label">Grupo:</span>
+        <span class="info-value">{{ student.group_name }}</span>
+      </div>
+      <div class="info-pair">
+        <span class="info-label">CURP:</span>
+        <span class="info-value">{{ student.curp or '---' }}</span>
+      </div>
+      <div class="info-pair">
+        <span class="info-label">Fecha de Nacimiento:</span>
+        <span class="info-value">{{ student.birth_date|fecha_mx if student.birth_date else '---' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Evaluation Table -->
+{% if areas and periods %}
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Evaluaciones</h2>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table boleta-table">
+        <thead>
+          <tr>
+            <th>Area de Evaluacion</th>
+            {% for p in periods %}
+            <th class="text-center">{{ p.name }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in areas %}
+          <tr>
+            <td><strong>{{ a.name }}</strong></td>
+            {% for p in periods %}
+            {% set ev = eval_table.get((a.id, p.id)) %}
+            <td class="text-center">
+              {% if ev and ev.grade_label %}
+              <span class="badge" style="background-color: {{ ev.grade_color or '#888' }}; color: white;">
+                {{ ev.grade_label }}
+              </span>
+              {% else %}
+              <span class="text-muted">---</span>
+              {% endif %}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-body">
+    <p class="text-muted text-center">No hay areas de evaluacion o periodos configurados.</p>
+  </div>
+</div>
+{% endif %}
+
+<!-- Observations -->
+{% if observations %}
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Observaciones</h2>
+  </div>
+  <div class="card-body">
+    {% for obs in observations %}
+    <div class="observation-item">
+      <div class="obs-meta">
+        <span class="obs-date">{{ obs.created_at[:10]|fecha_mx }}</span>
+        <span class="badge badge-outline">{{ obs.category }}</span>
+        {% if obs.author_name %}
+        <span class="text-muted">por {{ obs.author_name }}</span>
+        {% endif %}
+      </div>
+      <p class="obs-content">{{ obs.content }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

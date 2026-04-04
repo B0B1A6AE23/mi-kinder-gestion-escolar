@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Reporte de Asistencia - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{{ url_for('attendance.index') }}" class="btn btn-ghost btn-sm">&larr; Asistencia</a>
+    <h1 class="page-title">Reporte de Asistencia</h1>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-body">
+    <form method="GET" action="{{ url_for('attendance.report') }}" class="filter-form">
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label for="group_id" class="form-label">Grupo</label>
+          <select id="group_id" name="group_id" class="form-control" required>
+            <option value="">-- Seleccionar --</option>
+            {% for g in groups %}
+            <option value="{{ g.id }}" {{ 'selected' if selected_group == g.id }}>{{ g.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="start_date" class="form-label">Fecha Inicio</label>
+          <input type="date" id="start_date" name="start_date" class="form-control"
+                 value="{{ start_date }}" required>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="end_date" class="form-label">Fecha Fin</label>
+          <input type="date" id="end_date" name="end_date" class="form-control"
+                 value="{{ end_date }}" required>
+        </div>
+        <div class="form-group" style="align-self:flex-end;">
+          <button type="submit" class="btn btn-primary">Generar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if report_data %}
+<div style="margin-bottom: 1rem; text-align: right;">
+  <a href="{{ url_for('exports.attendance_excel', group_id=selected_group, start_date=start_date, end_date=end_date) }}"
+     class="btn btn-sm btn-outline">Exportar Excel</a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Resultados ({{ report_data|length }} alumnos)</h2>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Alumno</th>
+            <th class="text-center">Presentes</th>
+            <th class="text-center">Faltas</th>
+            <th class="text-center">Retardos</th>
+            <th class="text-center">Justificadas</th>
+            <th class="text-center">Total</th>
+            <th class="text-center">% Asistencia</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in report_data %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td><strong>{{ r.name }}</strong></td>
+            <td class="text-center">
+              <span class="badge badge-success">{{ r.present }}</span>
+            </td>
+            <td class="text-center">
+              <span class="badge badge-error">{{ r.absent }}</span>
+            </td>
+            <td class="text-center">
+              <span class="badge badge-warning">{{ r.late }}</span>
+            </td>
+            <td class="text-center">
+              <span class="badge badge-info">{{ r.justified }}</span>
+            </td>
+            <td class="text-center">{{ r.total }}</td>
+            <td class="text-center">
+              <strong class="{{ 'text-success' if r.rate >= 80 else ('text-warning' if r.rate >= 60 else 'text-error') }}">
+                {{ r.rate }}%
+              </strong>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% elif selected_group %}
+<div class="empty-state">
+  <div class="empty-icon">📋</div>
+  <h3>Sin datos</h3>
+  <p>No se encontraron registros de asistencia para el rango seleccionado.</p>
+</div>
+{% endif %}
+{% endblock %}

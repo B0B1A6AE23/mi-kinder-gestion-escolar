@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Editar' if student else 'Nuevo' }} Alumno - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{{ url_for('students.index') }}" class="btn btn-ghost btn-sm">&larr; Alumnos</a>
+    <h1 class="page-title">{{ 'Editar Alumno' if student else 'Nuevo Alumno' }}</h1>
+  </div>
+</div>
+
+<div class="card" style="max-width: 800px;">
+  <div class="card-body">
+    <form method="POST" enctype="multipart/form-data"
+          action="{{ url_for('students.edit', student_id=student.id) if student else url_for('students.create') }}">
+
+      <h3 class="form-section-title">Datos Personales</h3>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label for="first_name" class="form-label">Nombre(s) *</label>
+          <input type="text" id="first_name" name="first_name" class="form-control"
+                 value="{{ student.first_name if student else '' }}" required>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="last_name" class="form-label">Apellido Paterno *</label>
+          <input type="text" id="last_name" name="last_name" class="form-control"
+                 value="{{ student.last_name if student else '' }}" required>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="second_last_name" class="form-label">Apellido Materno</label>
+          <input type="text" id="second_last_name" name="second_last_name" class="form-control"
+                 value="{{ student.second_last_name if student else '' }}">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label for="group_id" class="form-label">Grupo *</label>
+          <select id="group_id" name="group_id" class="form-control" required>
+            <option value="">-- Seleccionar --</option>
+            {% for g in groups %}
+            <option value="{{ g.id }}" {{ 'selected' if student and student.group_id == g.id }}>{{ g.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="gender" class="form-label">Genero</label>
+          <select id="gender" name="gender" class="form-control">
+            <option value="">-- Seleccionar --</option>
+            <option value="M" {{ 'selected' if student and student.gender == 'M' }}>Masculino</option>
+            <option value="F" {{ 'selected' if student and student.gender == 'F' }}>Femenino</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="birth_date" class="form-label">Fecha de Nacimiento</label>
+          <input type="date" id="birth_date" name="birth_date" class="form-control"
+                 value="{{ student.birth_date if student else '' }}">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:2;">
+          <label for="curp" class="form-label">CURP</label>
+          <input type="text" id="curp" name="curp" class="form-control" maxlength="18"
+                 value="{{ student.curp if student else '' }}" placeholder="18 caracteres" style="text-transform:uppercase;">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="photo" class="form-label">Foto</label>
+          <input type="file" id="photo" name="photo" class="form-control" accept="image/*">
+        </div>
+      </div>
+
+      <h3 class="form-section-title">Tutor / Responsable</h3>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label for="guardian_name" class="form-label">Nombre del Tutor</label>
+          <input type="text" id="guardian_name" name="guardian_name" class="form-control"
+                 value="{{ student.guardian_name if student else '' }}">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="guardian_phone" class="form-label">Telefono</label>
+          <input type="tel" id="guardian_phone" name="guardian_phone" class="form-control"
+                 value="{{ student.guardian_phone if student else '' }}" placeholder="9711234567">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label for="guardian_email" class="form-label">Email</label>
+          <input type="email" id="guardian_email" name="guardian_email" class="form-control"
+                 value="{{ student.guardian_email if student else '' }}">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="address" class="form-label">Direccion</label>
+          <input type="text" id="address" name="address" class="form-control"
+                 value="{{ student.address if student else '' }}">
+        </div>
+      </div>
+
+      <h3 class="form-section-title">Informacion Medica</h3>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label for="blood_type" class="form-label">Tipo de Sangre</label>
+          <select id="blood_type" name="blood_type" class="form-control">
+            <option value="">-- Seleccionar --</option>
+            {% for bt in ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] %}
+            <option value="{{ bt }}" {{ 'selected' if student and student.blood_type == bt }}>{{ bt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group" style="flex:2;">
+          <label for="allergies" class="form-label">Alergias</label>
+          <input type="text" id="allergies" name="allergies" class="form-control"
+                 value="{{ student.allergies if student else '' }}" placeholder="Separar con comas">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="medical_notes" class="form-label">Notas Medicas</label>
+        <textarea id="medical_notes" name="medical_notes" class="form-control" rows="3"
+                  placeholder="Condiciones especiales, medicamentos, etc.">{{ student.medical_notes if student else '' }}</textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ 'Actualizar Alumno' if student else 'Registrar Alumno' }}
+        </button>
+        <a href="{{ url_for('students.index') }}" class="btn btn-ghost">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

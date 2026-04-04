@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Dashboard</h1>
+  <p class="page-subtitle">Resumen general del colegio</p>
+</div>
+
+<!-- Stat Cards -->
+<div class="stats-grid">
+  <div class="stat-card stat-card--students">
+    <div class="stat-icon">🎒</div>
+    <div class="stat-info">
+      <span class="stat-value">{{ stats.students }}</span>
+      <span class="stat-label">Alumnos Activos</span>
+    </div>
+  </div>
+  <div class="stat-card stat-card--groups">
+    <div class="stat-icon">👥</div>
+    <div class="stat-info">
+      <span class="stat-value">{{ stats.groups }}</span>
+      <span class="stat-label">Grupos</span>
+    </div>
+  </div>
+  <div class="stat-card stat-card--teachers">
+    <div class="stat-icon">👩‍🏫</div>
+    <div class="stat-info">
+      <span class="stat-value">{{ stats.teachers }}</span>
+      <span class="stat-label">Maestras</span>
+    </div>
+  </div>
+  <div class="stat-card stat-card--attendance">
+    <div class="stat-icon">📋</div>
+    <div class="stat-info">
+      <span class="stat-value">{{ stats.attendance_rate }}%</span>
+      <span class="stat-label">Asistencia (30 dias)</span>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Acciones Rapidas</h2>
+  </div>
+  <div class="card-body">
+    <div class="quick-actions">
+      <a href="{{ url_for('attendance.index', date=today_iso) }}" class="quick-action-btn">
+        <span class="qa-icon">📋</span>
+        <span>Tomar Asistencia</span>
+      </a>
+      <a href="{{ url_for('students.create') }}" class="quick-action-btn">
+        <span class="qa-icon">➕</span>
+        <span>Nuevo Alumno</span>
+      </a>
+      <a href="{{ url_for('evaluations.index') }}" class="quick-action-btn">
+        <span class="qa-icon">📝</span>
+        <span>Evaluar</span>
+      </a>
+      <a href="{{ url_for('reports.index') }}" class="quick-action-btn">
+        <span class="qa-icon">📄</span>
+        <span>Reportes</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-grid">
+  <!-- Groups Summary -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Grupos</h2>
+      <a href="{{ url_for('groups.index') }}" class="btn btn-sm btn-outline">Ver todos</a>
+    </div>
+    <div class="card-body">
+      {% if groups %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Grupo</th>
+              <th>Grado</th>
+              <th>Maestra</th>
+              <th>Alumnos</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for g in groups %}
+            <tr>
+              <td>
+                <a href="{{ url_for('groups.detail', group_id=g.id) }}" class="link-primary">{{ g.name }}</a>
+              </td>
+              <td>{{ g.grade_level or '---' }}</td>
+              <td>{{ g.teacher_name or 'Sin asignar' }}</td>
+              <td><span class="badge badge-info">{{ g.student_count }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted text-center">No hay grupos registrados.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Recent Absences -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Inasistencias Recientes</h2>
+      <a href="{{ url_for('attendance.report') }}" class="btn btn-sm btn-outline">Reporte</a>
+    </div>
+    <div class="card-body">
+      {% if absences %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Alumno</th>
+              <th>Grupo</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in absences %}
+            <tr>
+              <td>{{ a.student_name }}</td>
+              <td>{{ a.group_name }}</td>
+              <td>{{ a.date|fecha_mx }}</td>
+              <td>
+                <span class="badge badge-{{ 'error' if a.status == 'absent' else 'warning' }}">
+                  {{ a.status|status_label }}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted text-center">Sin inasistencias recientes.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Upcoming Birthdays -->
+{% if birthdays %}
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Proximos Cumpleanos 🎂</h2>
+  </div>
+  <div class="card-body">
+    <div class="birthday-list">
+      {% for b in birthdays %}
+      <div class="birthday-item">
+        <span class="birthday-icon">🎈</span>
+        <div>
+          <strong>{{ b.name }}</strong>
+          <small class="text-muted">{{ b.group_name }} &middot; {{ b.birth_date|fecha_mx }}</small>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% block title %}Ajustes - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Ajustes</h1>
+</div>
+
+<!-- School Info -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Informacion de la Escuela</h2>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{{ url_for('settings.update_school_info') }}">
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label for="name" class="form-label">Nombre de la Escuela</label>
+          <input type="text" id="name" name="name" class="form-control"
+                 value="{{ school_info.name if school_info else 'Colegio CAPI' }}">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="director_name" class="form-label">Directora</label>
+          <input type="text" id="director_name" name="director_name" class="form-control"
+                 value="{{ school_info.director_name if school_info and school_info.director_name else '' }}">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex:2;">
+          <label for="address" class="form-label">Direccion</label>
+          <input type="text" id="address" name="address" class="form-control"
+                 value="{{ school_info.address if school_info and school_info.address else '' }}">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="phone" class="form-label">Telefono</label>
+          <input type="text" id="phone" name="phone" class="form-control"
+                 value="{{ school_info.phone if school_info and school_info.phone else '' }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" id="email" name="email" class="form-control" style="max-width:400px;"
+               value="{{ school_info.email if school_info and school_info.email else '' }}">
+      </div>
+      <button type="submit" class="btn btn-primary">Guardar Informacion</button>
+    </form>
+  </div>
+</div>
+
+<!-- School Years -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Ciclos Escolares</h2>
+  </div>
+  <div class="card-body">
+    {% if school_years %}
+    <div class="table-responsive" style="margin-bottom: 1.5rem;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for y in school_years %}
+          <tr>
+            <td><strong>{{ y.name }}</strong></td>
+            <td>{{ y.start_date|fecha_mx }}</td>
+            <td>{{ y.end_date|fecha_mx }}</td>
+            <td>
+              {% if y.is_active %}
+              <span class="badge badge-success">Activo</span>
+              {% else %}
+              <span class="badge badge-outline">Inactivo</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if not y.is_active %}
+              <form method="POST" action="{{ url_for('settings.activate_school_year', year_id=y.id) }}" style="display:inline;">
+                <button type="submit" class="btn btn-xs btn-outline"
+                        onclick="return confirm('Activar este ciclo escolar?')">Activar</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <h3 class="form-section-title">Nuevo Ciclo Escolar</h3>
+    <form method="POST" action="{{ url_for('settings.create_school_year') }}">
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Nombre</label>
+          <input type="text" name="name" class="form-control" required placeholder="Ej: 2025-2026">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Fecha Inicio</label>
+          <input type="date" name="start_date" class="form-control" required>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Fecha Fin</label>
+          <input type="date" name="end_date" class="form-control" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="set_active" value="1">
+          <span>Establecer como ciclo activo</span>
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary">Crear Ciclo Escolar</button>
+    </form>
+  </div>
+</div>
+
+<!-- Periods -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Periodos de Evaluacion</h2>
+  </div>
+  <div class="card-body">
+    {% if periods %}
+    <div class="table-responsive" style="margin-bottom: 1.5rem;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Orden</th>
+            <th>Nombre</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in periods %}
+          <tr>
+            <td>{{ p.sort_order }}</td>
+            <td><strong>{{ p.name }}</strong></td>
+            <td>{{ p.start_date|fecha_mx }}</td>
+            <td>{{ p.end_date|fecha_mx }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <h3 class="form-section-title">Nuevo Periodo</h3>
+    <form method="POST" action="{{ url_for('settings.create_period') }}">
+      <div class="form-row">
+        <div class="form-group" style="flex:2;">
+          <label class="form-label">Nombre</label>
+          <input type="text" name="name" class="form-control" required placeholder="Ej: Primer Trimestre">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Orden</label>
+          <input type="number" name="sort_order" class="form-control" value="{{ (periods|length) + 1 }}" min="1">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Fecha Inicio</label>
+          <input type="date" name="start_date" class="form-control" required>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Fecha Fin</label>
+          <input type="date" name="end_date" class="form-control" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Crear Periodo</button>
+    </form>
+  </div>
+</div>
+
+<!-- Evaluation Areas -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Areas de Evaluacion</h2>
+  </div>
+  <div class="card-body">
+    {% if areas %}
+    <div class="table-responsive" style="margin-bottom: 1.5rem;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Orden</th>
+            <th>Nombre</th>
+            <th>Descripcion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in areas %}
+          <tr>
+            <td>{{ a.sort_order }}</td>
+            <td><strong>{{ a.name }}</strong></td>
+            <td>{{ a.description or '---' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <h3 class="form-section-title">Nueva Area</h3>
+    <form method="POST" action="{{ url_for('settings.create_area') }}">
+      <div class="form-row">
+        <div class="form-group" style="flex:2;">
+          <label class="form-label">Nombre</label>
+          <input type="text" name="name" class="form-control" required placeholder="Ej: Lenguaje y Comunicacion">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Orden</label>
+          <input type="number" name="sort_order" class="form-control" value="{{ (areas|length) + 1 }}" min="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripcion</label>
+        <input type="text" name="description" class="form-control" placeholder="Opcional">
+      </div>
+      <button type="submit" class="btn btn-primary">Crear Area</button>
+    </form>
+  </div>
+</div>
+
+<!-- Grading Scales -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Escalas de Evaluacion</h2>
+  </div>
+  <div class="card-body">
+    {% for s in scales %}
+    <div class="scale-card">
+      <h3>{{ s.name }}
+        {% if s.is_default %}<span class="badge badge-success">Por defecto</span>{% endif %}
+        <small class="text-muted">({{ s.scale_type }})</small>
+      </h3>
+      <div class="scale-levels">
+        {% for level in scale_levels.get(s.id, []) %}
+        <span class="badge" style="background-color: {{ level.color or '#888' }}; color: white; margin: 2px;">
+          {{ level.label }} ({{ level.numeric_value }})
+        </span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+    {% if not scales %}
+    <p class="text-muted text-center">No hay escalas de evaluacion configuradas.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

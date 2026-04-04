@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Reportes - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Reportes y Boletas</h1>
+</div>
+
+<div class="cards-grid">
+  <!-- Individual Reports -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Boletas Individuales</h2>
+    </div>
+    <div class="card-body">
+      <p class="text-muted" style="margin-bottom: 1rem;">Genera la boleta de evaluacion de un alumno especifico.</p>
+      <form method="GET" action="" id="individualForm">
+        <div class="form-group">
+          <label for="ind_group" class="form-label">Grupo</label>
+          <select id="ind_group" class="form-control" onchange="loadStudents(this.value)">
+            <option value="">-- Seleccionar Grupo --</option>
+            {% for g in groups %}
+            <option value="{{ g.id }}">{{ g.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="ind_student" class="form-label">Alumno</label>
+          <select id="ind_student" class="form-control" disabled>
+            <option value="">-- Primero selecciona grupo --</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" onclick="viewIndividual()">Ver Boleta</button>
+          <button type="button" class="btn btn-outline" onclick="downloadIndividualPdf()">Descargar PDF</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Group Reports -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Reportes Grupales</h2>
+    </div>
+    <div class="card-body">
+      <p class="text-muted" style="margin-bottom: 1rem;">Genera el reporte general de un grupo con ranking y promedios.</p>
+      {% if groups %}
+      <div class="report-group-list">
+        {% for g in groups %}
+        <div class="report-group-item">
+          <span class="group-icon">👥</span>
+          <span class="group-label">{{ g.name }}</span>
+          <div class="report-group-actions">
+            <a href="{{ url_for('reports.group', group_id=g.id) }}" class="btn btn-sm btn-outline">Ver</a>
+            <a href="{{ url_for('reports.group_pdf', group_id=g.id) }}" class="btn btn-sm btn-ghost">PDF</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-muted text-center">No hay grupos disponibles.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function loadStudents(groupId) {
+  var sel = document.getElementById('ind_student');
+  sel.innerHTML = '<option value="">Cargando...</option>';
+  sel.disabled = true;
+
+  if (!groupId) {
+    sel.innerHTML = '<option value="">-- Primero selecciona grupo --</option>';
+    return;
+  }
+
+  fetch('/students?group_id=' + groupId)
+    .then(function() {
+      // We fetch via a simple AJAX approach using the existing page
+      // For simplicity, redirect approach
+      sel.innerHTML = '<option value="">-- Selecciona y usa el boton --</option>';
+      sel.disabled = false;
+
+      // Fetch students via a lightweight endpoint
+      fetch('/api/students-list?group_id=' + groupId)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          sel.innerHTML = '<option value="">-- Seleccionar Alumno --</option>';
+          data.forEach(function(s) {
+            var opt = document.createElement('option');
+            opt.value = s.id;
+            opt.textContent = s.name;
+            sel.appendChild(opt);
+          });
+          sel.disabled = false;
+        })
+        .catch(function() {
+          sel.innerHTML = '<option value="">Error al cargar alumnos</option>';
+        });
+    })
+    .catch(function() {
+      sel.innerHTML = '<option value="">Error</option>';
+    });
+}
+
+function viewIndividual() {
+  var studentId = document.getElementById('ind_student').value;
+  if (!studentId) { alert('Selecciona un alumno.'); return; }
+  window.location.href = '/reports/individual/' + studentId;
+}
+
+function downloadIndividualPdf() {
+  var studentId = document.getElementById('ind_student').value;
+  if (!studentId) { alert('Selecciona un alumno.'); return; }
+  window.location.href = '/reports/individual/' + studentId + '/pdf';
+}
+</script>
+{% endblock %}

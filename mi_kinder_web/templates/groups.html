@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Grupos - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Grupos</h1>
+  {% if is_directora %}
+  <a href="{{ url_for('groups.create') }}" class="btn btn-primary">+ Nuevo Grupo</a>
+  {% endif %}
+</div>
+
+{% if groups %}
+<div class="cards-grid">
+  {% for g in groups %}
+  <div class="card card-hover">
+    <div class="card-body">
+      <div class="group-card-header">
+        <span class="group-icon">👥</span>
+        <div>
+          <h3 class="group-name">
+            <a href="{{ url_for('groups.detail', group_id=g.id) }}">{{ g.name }}</a>
+          </h3>
+          {% if g.grade_level %}
+          <span class="badge badge-outline">{{ g.grade_level }}</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="group-meta">
+        <div class="meta-item">
+          <span class="meta-label">Maestra</span>
+          <span class="meta-value">{{ g.teacher_name or 'Sin asignar' }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Alumnos</span>
+          <span class="meta-value">
+            <span class="badge badge-info">{{ g.student_count }}</span>
+            {% if g.capacity %}
+            <small class="text-muted">/ {{ g.capacity }}</small>
+            {% endif %}
+          </span>
+        </div>
+      </div>
+      <div class="group-actions">
+        <a href="{{ url_for('groups.detail', group_id=g.id) }}" class="btn btn-sm btn-outline">Ver Detalle</a>
+        {% if is_directora %}
+        <a href="{{ url_for('groups.edit', group_id=g.id) }}" class="btn btn-sm btn-ghost">Editar</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">👥</div>
+  <h3>Sin grupos</h3>
+  <p>No hay grupos registrados para el ciclo escolar actual.</p>
+  {% if is_directora %}
+  <a href="{{ url_for('groups.create') }}" class="btn btn-primary">Crear Primer Grupo</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

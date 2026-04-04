@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Editar' if group else 'Nuevo' }} Grupo - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{{ url_for('groups.index') }}" class="btn btn-ghost btn-sm">&larr; Grupos</a>
+    <h1 class="page-title">{{ 'Editar Grupo' if group else 'Nuevo Grupo' }}</h1>
+  </div>
+</div>
+
+<div class="card" style="max-width: 600px;">
+  <div class="card-body">
+    <form method="POST" action="{{ url_for('groups.edit', group_id=group.id) if group else url_for('groups.create') }}">
+      <div class="form-group">
+        <label for="name" class="form-label">Nombre del Grupo *</label>
+        <input type="text" id="name" name="name" class="form-control"
+               value="{{ group.name if group else '' }}" required placeholder="Ej: 1-A Estrellitas">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="grade_level" class="form-label">Grado</label>
+          <select id="grade_level" name="grade_level" class="form-control">
+            <option value="">-- Seleccionar --</option>
+            {% for grade in ['1o Preescolar', '2o Preescolar', '3o Preescolar', 'Maternal', 'Lactante'] %}
+            <option value="{{ grade }}" {{ 'selected' if group and group.grade_level == grade }}>{{ grade }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="capacity" class="form-label">Capacidad</label>
+          <input type="number" id="capacity" name="capacity" class="form-control"
+                 value="{{ group.capacity if group and group.capacity else '' }}" min="1" max="50" placeholder="25">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="teacher_id" class="form-label">Maestra Asignada</label>
+        <select id="teacher_id" name="teacher_id" class="form-control">
+          <option value="">-- Sin asignar --</option>
+          {% for t in teachers %}
+          <option value="{{ t.id }}" {{ 'selected' if current_teacher_id is defined and current_teacher_id == t.id }}>
+            {{ t.full_name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ 'Actualizar Grupo' if group else 'Crear Grupo' }}
+        </button>
+        <a href="{{ url_for('groups.index') }}" class="btn btn-ghost">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

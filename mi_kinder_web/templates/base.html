@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=Varela+Round&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/kinder-design-system.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-logo">🏫</span>
+        <div>
+          <h2 class="sidebar-title">Colegio CAPI</h2>
+          <p class="sidebar-subtitle">Gestion Escolar</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="{{ url_for('dashboard.index') }}" class="nav-item {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="{{ url_for('groups.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('groups.') %}active{% endif %}">
+          <span class="nav-icon">👥</span>
+          <span class="nav-label">Grupos</span>
+        </a>
+        <a href="{{ url_for('students.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('students.') %}active{% endif %}">
+          <span class="nav-icon">🎒</span>
+          <span class="nav-label">Alumnos</span>
+        </a>
+        <a href="{{ url_for('evaluations.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('evaluations.') %}active{% endif %}">
+          <span class="nav-icon">📝</span>
+          <span class="nav-label">Evaluaciones</span>
+        </a>
+        <a href="{{ url_for('attendance.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('attendance.') %}active{% endif %}">
+          <span class="nav-icon">📋</span>
+          <span class="nav-label">Asistencia</span>
+        </a>
+        <a href="{{ url_for('reports.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('reports.') %}active{% endif %}">
+          <span class="nav-icon">📄</span>
+          <span class="nav-label">Reportes / Boletas</span>
+        </a>
+        <a href="{{ url_for('charts.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('charts.') %}active{% endif %}">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Graficas</span>
+        </a>
+        <a href="{{ url_for('socioemocional.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('socioemocional.') %}active{% endif %}">
+          <span class="nav-icon">💚</span>
+          <span class="nav-label">Socioemocional</span>
+        </a>
+
+        {% if is_directora %}
+        <div class="nav-divider"></div>
+        <a href="{{ url_for('users.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('users.') %}active{% endif %}">
+          <span class="nav-icon">👤</span>
+          <span class="nav-label">Usuarios</span>
+        </a>
+        <a href="{{ url_for('settings.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('settings.') %}active{% endif %}">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Ajustes</span>
+        </a>
+        {% endif %}
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="{{ url_for('profile.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('profile.') %}active{% endif %}">
+          <span class="nav-icon">👤</span>
+          <span class="nav-label">{{ current_user.full_name }}</span>
+        </a>
+        <a href="{{ url_for('auth.logout') }}" class="nav-item nav-logout">
+          <span class="nav-icon">🚪</span>
+          <span class="nav-label">Cerrar Sesion</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="topbar-info">
+          {% if active_year %}
+          <span class="badge badge-info">{{ active_year.name }}</span>
+          {% endif %}
+          {% if current_period %}
+          <span class="badge badge-outline">{{ current_period.name }}</span>
+          {% endif %}
+        </div>
+        <div class="topbar-user">
+          <span class="topbar-role">{{ current_user.role|capitalize }}</span>
+          <span class="topbar-name">{{ current_user.full_name }}</span>
+        </div>
+      </header>
+
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <span>{{ message }}</span>
+            <button class="alert-close" onclick="this.parentElement.remove()" aria-label="Cerrar">&times;</button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- Page Content -->
+      <div class="page-content">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

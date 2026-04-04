@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ group.name }} - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{{ url_for('groups.index') }}" class="btn btn-ghost btn-sm">&larr; Grupos</a>
+    <h1 class="page-title">{{ group.name }}</h1>
+    <p class="page-subtitle">
+      {% if group.grade_level %}{{ group.grade_level }} &middot; {% endif %}
+      Maestra: {{ group.teacher_name or 'Sin asignar' }}
+    </p>
+  </div>
+  {% if is_directora %}
+  <a href="{{ url_for('groups.edit', group_id=group.id) }}" class="btn btn-outline">Editar Grupo</a>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Alumnos ({{ students|length }})</h2>
+    <a href="{{ url_for('students.create') }}" class="btn btn-sm btn-primary">+ Agregar Alumno</a>
+  </div>
+  <div class="card-body">
+    {% if students %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>CURP</th>
+            <th>Genero</th>
+            <th>Tutor</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in students %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>
+              <a href="{{ url_for('students.detail', student_id=s.id) }}" class="link-primary">
+                {{ s.last_name }} {{ s.second_last_name or '' }}, {{ s.first_name }}
+              </a>
+            </td>
+            <td><code>{{ s.curp or '---' }}</code></td>
+            <td>{{ 'Nino' if s.gender == 'M' else ('Nina' if s.gender == 'F' else '---') }}</td>
+            <td>{{ s.guardian_name or '---' }}</td>
+            <td>
+              <a href="{{ url_for('students.detail', student_id=s.id) }}" class="btn btn-xs btn-outline">Ver</a>
+              <a href="{{ url_for('students.edit', student_id=s.id) }}" class="btn btn-xs btn-ghost">Editar</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🎒</div>
+      <h3>Sin alumnos</h3>
+      <p>Este grupo no tiene alumnos registrados.</p>
+      <a href="{{ url_for('students.create') }}" class="btn btn-primary">Agregar Alumno</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

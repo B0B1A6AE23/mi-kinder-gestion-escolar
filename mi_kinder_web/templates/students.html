@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Alumnos - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Alumnos</h1>
+  <a href="{{ url_for('students.create') }}" class="btn btn-primary">+ Nuevo Alumno</a>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-body">
+    <form method="GET" action="{{ url_for('students.index') }}" class="filter-form">
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label for="q" class="form-label">Buscar</label>
+          <input type="text" id="q" name="q" class="form-control" placeholder="Nombre, apellido o CURP..."
+                 value="{{ search_q or '' }}">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="group_id" class="form-label">Grupo</label>
+          <select id="group_id" name="group_id" class="form-control">
+            <option value="">Todos los grupos</option>
+            {% for g in groups %}
+            <option value="{{ g.id }}" {{ 'selected' if selected_group == g.id }}>{{ g.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group" style="align-self:flex-end;">
+          <button type="submit" class="btn btn-primary">Filtrar</button>
+          {% if search_q or selected_group %}
+          <a href="{{ url_for('students.index') }}" class="btn btn-ghost">Limpiar</a>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Export -->
+<div style="margin-bottom: 1rem; text-align: right;">
+  <a href="{{ url_for('exports.students_excel', group_id=selected_group or '') }}" class="btn btn-sm btn-outline">
+    Exportar Excel
+  </a>
+</div>
+
+{% if students %}
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Grupo</th>
+            <th>Genero</th>
+            <th>Tutor</th>
+            <th>Telefono</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in students %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>
+              <a href="{{ url_for('students.detail', student_id=s.id) }}" class="link-primary">
+                {{ s.last_name }} {{ s.second_last_name or '' }}, {{ s.first_name }}
+              </a>
+            </td>
+            <td><span class="badge badge-outline">{{ s.group_name }}</span></td>
+            <td>{{ 'M' if s.gender == 'M' else ('F' if s.gender == 'F' else '---') }}</td>
+            <td>{{ s.guardian_name or '---' }}</td>
+            <td>{{ s.guardian_phone or '---' }}</td>
+            <td>
+              <a href="{{ url_for('students.detail', student_id=s.id) }}" class="btn btn-xs btn-outline">Ver</a>
+              <a href="{{ url_for('students.edit', student_id=s.id) }}" class="btn btn-xs btn-ghost">Editar</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-muted text-center" style="margin-top:0.5rem;">
+      Mostrando {{ students|length }} alumno(s)
+    </p>
+  </div>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">🎒</div>
+  <h3>Sin alumnos</h3>
+  <p>No se encontraron alumnos con los filtros seleccionados.</p>
+  <a href="{{ url_for('students.create') }}" class="btn btn-primary">Registrar Alumno</a>
+</div>
+{% endif %}
+{% endblock %}

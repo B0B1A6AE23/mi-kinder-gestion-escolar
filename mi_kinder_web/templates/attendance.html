@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Asistencia - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Asistencia</h1>
+  <a href="{{ url_for('attendance.report') }}" class="btn btn-outline">Reporte de Asistencia</a>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-body">
+    <form method="GET" action="{{ url_for('attendance.index') }}" class="filter-form">
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label for="group_id" class="form-label">Grupo</label>
+          <select id="group_id" name="group_id" class="form-control" onchange="this.form.submit()">
+            <option value="">-- Seleccionar Grupo --</option>
+            {% for g in groups %}
+            <option value="{{ g.id }}" {{ 'selected' if selected_group == g.id }}>{{ g.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="date" class="form-label">Fecha</label>
+          <input type="date" id="date" name="date" class="form-control"
+                 value="{{ selected_date }}" onchange="this.form.submit()">
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if selected_group and students %}
+<form method="POST" action="{{ url_for('attendance.save') }}">
+  <input type="hidden" name="group_id" value="{{ selected_group }}">
+  <input type="hidden" name="date" value="{{ selected_date }}">
+
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Lista de Asistencia ({{ students|length }} alumnos)</h2>
+      <button type="submit" class="btn btn-primary">Guardar Asistencia</button>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table attendance-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Alumno</th>
+              <th class="text-center">Presente</th>
+              <th class="text-center">Falta</th>
+              <th class="text-center">Retardo</th>
+              <th class="text-center">Justificada</th>
+              <th>Notas</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in students %}
+            {% set att = attendance_map.get(s.id, {}) %}
+            {% set current_status = att.get('status', 'present') %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>
+                <strong>{{ s.last_name }} {{ s.second_last_name or '' }}, {{ s.first_name }}</strong>
+              </td>
+              <td class="text-center">
+                <input type="radio" name="status_{{ s.id }}" value="present"
+                       {{ 'checked' if current_status == 'present' }}
+                       class="radio-att radio-present">
+              </td>
+              <td class="text-center">
+                <input type="radio" name="status_{{ s.id }}" value="absent"
+                       {{ 'checked' if current_status == 'absent' }}
+                       class="radio-att radio-absent">
+              </td>
+              <td class="text-center">
+                <input type="radio" name="status_{{ s.id }}" value="late"
+                       {{ 'checked' if current_status == 'late' }}
+                       class="radio-att radio-late">
+              </td>
+              <td class="text-center">
+                <input type="radio" name="status_{{ s.id }}" value="justified"
+                       {{ 'checked' if current_status == 'justified' }}
+                       class="radio-att radio-justified">
+              </td>
+              <td>
+                <input type="text" name="notes_{{ s.id }}" class="form-control form-control-sm"
+                       value="{{ att.get('notes', '') }}" placeholder="Opcional">
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="form-actions" style="margin-top: 1rem;">
+        <button type="submit" class="btn btn-primary btn-block">Guardar Asistencia</button>
+      </div>
+
+      <!-- Quick buttons -->
+      <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <button type="button" class="btn btn-sm btn-outline" onclick="setAllAttendance('present')">Todos Presentes</button>
+        <button type="button" class="btn btn-sm btn-outline" onclick="setAllAttendance('absent')">Todos Falta</button>
+      </div>
+    </div>
+  </div>
+</form>
+{% elif selected_group %}
+<div class="empty-state">
+  <div class="empty-icon">📋</div>
+  <h3>Sin alumnos</h3>
+  <p>Este grupo no tiene alumnos activos.</p>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">📋</div>
+  <h3>Selecciona un grupo</h3>
+  <p>Elige un grupo y fecha para tomar asistencia.</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function setAllAttendance(status) {
+  document.querySelectorAll('input[type="radio"][value="' + status + '"]').forEach(function(r) {
+    r.checked = true;
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesion - Colegio CAPI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=Varela+Round&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/kinder-design-system.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-emoji">🎒</div>
+      <h1 class="login-title">Colegio CAPI</h1>
+      <p class="login-sub" style="font-size:0.78rem; line-height:1.3; color:var(--ink-light);">Centro de Atencion Psicopedagogica Infantil</p>
+      <p class="login-sub" style="margin-top:4px; font-style:italic; color:var(--ocean);">&ldquo;Educacion con valores&rdquo;</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages" style="margin-bottom: 1rem;">
+          {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <span>{{ message }}</span>
+            <button class="alert-close" onclick="this.parentElement.remove()" aria-label="Cerrar">&times;</button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('auth.login') }}">
+        <div class="form-group">
+          <label for="username" class="form-label">Usuario</label>
+          <input type="text" id="username" name="username" class="form-control"
+                 placeholder="Tu nombre de usuario" required autofocus autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password" class="form-label">Contrasena</label>
+          <input type="password" id="password" name="password" class="form-control"
+                 placeholder="Tu contrasena" required autocomplete="current-password">
+        </div>
+        <div class="form-group" style="display:flex; align-items:center; gap:8px; margin-bottom:20px;">
+          <input type="checkbox" id="remember_me" name="remember_me"
+                 style="width:18px; height:18px; accent-color: var(--clay); cursor:pointer;">
+          <label for="remember_me" style="font-family: var(--font-body); font-size:0.9rem; color:var(--ink-light); cursor:pointer; margin:0;">
+            Mantener sesion activa
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" style="font-size:1rem; padding:14px;">
+          Iniciar Sesion
+        </button>
+      </form>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</body>
+</html>

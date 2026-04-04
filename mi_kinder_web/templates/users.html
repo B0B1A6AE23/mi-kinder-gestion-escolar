@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Usuarios - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Usuarios</h1>
+  <a href="{{ url_for('users.create') }}" class="btn btn-primary">+ Nuevo Usuario</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    {% if users %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Grupos Asignados</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td><strong>{{ u.full_name }}</strong></td>
+            <td><code>{{ u.username }}</code></td>
+            <td>
+              <span class="badge badge-{{ 'info' if u.role == 'directora' else 'outline' }}">
+                {{ u.role|capitalize }}
+              </span>
+            </td>
+            <td>
+              {% if user_groups.get(u.id) %}
+                {% for gname in user_groups[u.id] %}
+                <span class="badge badge-outline">{{ gname }}</span>
+                {% endfor %}
+              {% else %}
+              <span class="text-muted">---</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="badge badge-{{ 'success' if u.is_active else 'error' }}">
+                {{ 'Activo' if u.is_active else 'Inactivo' }}
+              </span>
+            </td>
+            <td>
+              <a href="{{ url_for('users.edit', user_id=u.id) }}" class="btn btn-xs btn-outline">Editar</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">👤</div>
+      <h3>Sin usuarios</h3>
+      <p>No hay usuarios registrados.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

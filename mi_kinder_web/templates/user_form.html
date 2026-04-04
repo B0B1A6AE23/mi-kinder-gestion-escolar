@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Editar' if user else 'Nuevo' }} Usuario - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{{ url_for('users.index') }}" class="btn btn-ghost btn-sm">&larr; Usuarios</a>
+    <h1 class="page-title">{{ 'Editar Usuario' if user else 'Nuevo Usuario' }}</h1>
+  </div>
+</div>
+
+<div class="card" style="max-width: 600px;">
+  <div class="card-body">
+    <form method="POST" action="{{ url_for('users.edit', user_id=user.id) if user else url_for('users.create') }}">
+
+      {% if not user %}
+      <div class="form-group">
+        <label for="username" class="form-label">Nombre de Usuario *</label>
+        <input type="text" id="username" name="username" class="form-control"
+               required placeholder="ej: maestra_lupita" autocomplete="off">
+        <small class="form-help">Solo letras, numeros y guion bajo. Se convertira a minusculas.</small>
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label for="full_name" class="form-label">Nombre Completo *</label>
+        <input type="text" id="full_name" name="full_name" class="form-control"
+               value="{{ user.full_name if user else '' }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">
+          {{ 'Nueva Contrasena (dejar vacio para no cambiar)' if user else 'Contrasena *' }}
+        </label>
+        <input type="password" id="password" name="password" class="form-control"
+               {{ '' if user else 'required' }} autocomplete="new-password"
+               placeholder="{{ 'Dejar vacio para mantener' if user else 'Minimo 4 caracteres' }}">
+      </div>
+
+      <div class="form-group">
+        <label for="role" class="form-label">Rol</label>
+        <select id="role" name="role" class="form-control">
+          <option value="maestra" {{ 'selected' if user and user.role == 'maestra' }}>Maestra</option>
+          <option value="directora" {{ 'selected' if user and user.role == 'directora' }}>Directora</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Grupos Asignados</label>
+        <div class="checkbox-group">
+          {% for g in groups %}
+          <label class="checkbox-label">
+            <input type="checkbox" name="group_ids" value="{{ g.id }}"
+                   {{ 'checked' if current_groups is defined and g.id in current_groups }}>
+            <span>{{ g.name }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        {% if not groups %}
+        <small class="form-help">No hay grupos disponibles en el ciclo actual.</small>
+        {% endif %}
+      </div>
+
+      {% if user %}
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="is_active" value="1"
+                 {{ 'checked' if user.is_active }}>
+          <span>Usuario activo</span>
+        </label>
+      </div>
+      {% endif %}
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ 'Actualizar Usuario' if user else 'Crear Usuario' }}
+        </button>
+        <a href="{{ url_for('users.index') }}" class="btn btn-ghost">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
