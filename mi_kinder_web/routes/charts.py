@@ -60,8 +60,12 @@ def group_averages():
                   AVG(e.numeric_value) as avg_value,
                   COUNT(e.id) as eval_count
            FROM evaluation_areas ea
-           LEFT JOIN evaluations e ON e.evaluation_area_id = ea.id AND e.period_id = ?
-           LEFT JOIN students s ON s.id = e.student_id AND s.group_id = ?
+           LEFT JOIN evaluations e
+             ON e.evaluation_area_id = ea.id
+            AND e.period_id = ?
+            AND e.student_id IN (
+                SELECT id FROM students WHERE group_id = ? AND is_active = 1
+            )
            WHERE ea.school_year_id = (SELECT school_year_id FROM periods WHERE id = ?)
              AND ea.is_active = 1
            GROUP BY ea.id ORDER BY ea.sort_order""",
