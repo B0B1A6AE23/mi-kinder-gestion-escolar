@@ -38,7 +38,18 @@
 <div class="socio-grid">
   {% for s in students %}
   <div class="card">
-    <div class="card-header">
+    <div class="card-header" style="gap:0.75rem;">
+      {% set sav = photo_url(s.photo_path) if s.photo_path else None %}
+      {% if sav %}
+      <img src="{{ sav }}" alt="{{ s.first_name }}"
+           style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--capi-rosa);">
+      {% else %}
+      <div style="width:42px;height:42px;border-radius:50%;background:var(--gradient-capi);
+                  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+                  font-weight:800;font-size:1rem;line-height:1;color:white;user-select:none;">
+        {{ s.first_name[:1] }}
+      </div>
+      {% endif %}
       <h3 class="card-title">
         {{ s.first_name }} {{ s.last_name }} {{ s.second_last_name or '' }}
       </h3>
