@@ -23,16 +23,36 @@
     </div>
     <div class="card-body">
       {% set sp = photo_url(student.photo_path) if student.photo_path else None %}
-      {% if sp %}
-      <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem;">
-        <img src="{{ sp }}" alt="{{ student.first_name }}"
-             style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:3px solid var(--capi-rosa);">
+      <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+        <a href="{{ url_for('students.edit', student_id=student.id) }}"
+           title="Cambiar foto del alumno"
+           style="position:relative; display:block; flex-shrink:0; text-decoration:none;">
+          {% if sp %}
+          <img src="{{ sp }}" alt="{{ student.first_name }}"
+               style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid var(--capi-rosa); display:block;">
+          {% else %}
+          <div style="width:80px; height:80px; border-radius:50%; background:var(--gradient-capi);
+                      display:flex; align-items:center; justify-content:center;
+                      border:3px solid var(--capi-rosa); font-size:2rem; font-weight:800;
+                      color:white; line-height:1; user-select:none;">
+            {{ student.first_name[:1] }}
+          </div>
+          {% endif %}
+          <span style="position:absolute; bottom:2px; right:2px; background:white; border-radius:50%;
+                       width:22px; height:22px; display:flex; align-items:center; justify-content:center;
+                       font-size:0.7rem; box-shadow:0 1px 4px rgba(0,0,0,0.2);">📷</span>
+        </a>
         <div>
-          <strong style="font-size:1.05rem;">{{ student.first_name }} {{ student.last_name }}</strong>
+          <strong style="font-size:1.05rem;">{{ student.first_name }} {{ student.last_name }} {{ student.second_last_name or '' }}</strong>
           <br><span class="text-muted">{{ student.group_name }}</span>
+          {% if not sp %}
+          <br><a href="{{ url_for('students.edit', student_id=student.id) }}"
+                 style="font-size:0.75rem; color:var(--primary); text-decoration:none; opacity:0.7;">
+            + Agregar foto
+          </a>
+          {% endif %}
         </div>
       </div>
-      {% endif %}
       <dl class="detail-list">
         <div class="detail-item">
           <dt>CURP</dt>
@@ -72,14 +92,36 @@
       <h2 class="card-title">Tutor / Responsable</h2>
     </div>
     <div class="card-body">
-      {% if student.guardian_photo_path is defined and student.guardian_photo_path %}
-      {% set gp = photo_url(student.guardian_photo_path) %}
-      <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem;">
-        <img src="{{ gp }}" alt="{{ student.guardian_name or 'Tutor' }}"
-             style="width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid var(--capi-azul);">
-        <strong>{{ student.guardian_name or 'Tutor' }}</strong>
+      {% set gp = photo_url(student.guardian_photo_path) if (student.guardian_photo_path is defined and student.guardian_photo_path) else None %}
+      <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+        <a href="{{ url_for('students.edit', student_id=student.id) }}"
+           title="Cambiar foto del tutor"
+           style="position:relative; display:block; flex-shrink:0; text-decoration:none;">
+          {% if gp %}
+          <img src="{{ gp }}" alt="{{ student.guardian_name or 'Tutor' }}"
+               style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid var(--capi-azul); display:block;">
+          {% else %}
+          <div style="width:64px; height:64px; border-radius:50%; background:var(--capi-azul);
+                      display:flex; align-items:center; justify-content:center;
+                      border:2px solid var(--capi-azul); font-size:1.6rem; font-weight:800;
+                      color:white; line-height:1; user-select:none; opacity:0.85;">
+            {{ (student.guardian_name or 'T')[:1] }}
+          </div>
+          {% endif %}
+          <span style="position:absolute; bottom:1px; right:1px; background:white; border-radius:50%;
+                       width:20px; height:20px; display:flex; align-items:center; justify-content:center;
+                       font-size:0.65rem; box-shadow:0 1px 4px rgba(0,0,0,0.2);">📷</span>
+        </a>
+        <div>
+          <strong>{{ student.guardian_name or '---' }}</strong>
+          {% if not gp %}
+          <br><a href="{{ url_for('students.edit', student_id=student.id) }}"
+                 style="font-size:0.75rem; color:var(--primary); text-decoration:none; opacity:0.7;">
+            + Agregar foto
+          </a>
+          {% endif %}
+        </div>
       </div>
-      {% endif %}
       <dl class="detail-list">
         <div class="detail-item">
           <dt>Nombre</dt>
