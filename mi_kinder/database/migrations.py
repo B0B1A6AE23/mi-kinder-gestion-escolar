@@ -17,7 +17,17 @@ def run_migrations(conn: sqlite3.Connection):
     migrations = _get_migrations()
     for version, description, sql in migrations:
         if version > current:
-            conn.executescript(sql)
+            # Execute each statement individually so a "duplicate column name"
+            # error (column already added by a prior manual change) is skipped
+            # gracefully rather than crashing the whole startup.
+            for stmt in [s.strip() for s in sql.split(";") if s.strip()]:
+                try:
+                    conn.execute(stmt)
+                except sqlite3.OperationalError as exc:
+                    if "duplicate column name" in str(exc).lower():
+                        pass  # column already exists — safe to ignore
+                    else:
+                        raise
             conn.execute(
                 "INSERT INTO db_migrations (version, description) VALUES (?, ?)",
                 (version, description),
