@@ -71,7 +71,7 @@
                 <img src="{{ sav }}" alt=""
                      style="width:32px; height:32px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid var(--border);">
                 {% else %}
-                <div style="width:32px; height:32px; border-radius:50%; background:var(--capi-rosa); opacity:0.85; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-weight:700; color:white; font-size:0.8rem;">{{ s.first_name[:1] }}</div>
+                <div style="width:32px; height:32px; border-radius:50%; background:var(--capi-rosa); opacity:0.85; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-weight:700; line-height:1; color:white; font-size:0.8rem; user-select:none;">{{ s.first_name[:1] }}</div>
                 {% endif %}
                 <a href="{{ url_for('students.detail', student_id=s.id) }}" class="link-primary">
                   {{ s.last_name }} {{ s.second_last_name or '' }}, {{ s.first_name }}

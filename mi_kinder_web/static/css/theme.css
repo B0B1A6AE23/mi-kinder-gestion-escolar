@@ -286,9 +286,12 @@
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 0.8rem;
+  line-height: 1;
+  text-align: center;
   flex-shrink: 0;
   box-shadow: 0 2px 8px var(--primary-ring);
   transition: transform var(--dur-fast) var(--ease-spring);
+  user-select: none;
 }
 
 .user-avatar:hover {
