@@ -182,6 +182,7 @@
 <div class="card" style="margin-bottom: 1.5rem;">
   <div class="card-header">
     <h2 class="card-title">Áreas de Evaluación</h2>
+    <small class="text-muted">Se comparten entre todos los periodos del ciclo activo.</small>
   </div>
   <div class="card-body">
     {% if areas %}
@@ -189,22 +190,60 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Orden</th>
+            <th style="width:60px;">Orden</th>
             <th>Nombre</th>
             <th>Descripción</th>
+            <th style="width:140px;">Acciones</th>
           </tr>
         </thead>
         <tbody>
           {% for a in areas %}
-          <tr>
+          <tr id="area-row-{{ a.id }}">
             <td>{{ a.sort_order }}</td>
             <td><strong>{{ a.name }}</strong></td>
             <td>{{ a.description or '---' }}</td>
+            <td>
+              <button type="button" class="btn btn-xs btn-outline"
+                      onclick="toggleEditArea({{ a.id }})">✏️ Editar</button>
+              <form method="POST" action="{{ url_for('settings.delete_area', area_id=a.id) }}" style="display:inline;">
+                <button type="submit" class="btn btn-xs btn-ghost" style="color:var(--capi-rojo);"
+                        onclick="return confirm('¿Eliminar el área «{{ a.name }}»? Si tiene evaluaciones registradas, solo se desactivará.')">
+                  🗑
+                </button>
+              </form>
+            </td>
+          </tr>
+          <tr id="area-edit-{{ a.id }}" style="display:none; background:var(--neutral-50);">
+            <td colspan="4" style="padding:1rem;">
+              <form method="POST" action="{{ url_for('settings.edit_area', area_id=a.id) }}">
+                <div class="form-row" style="align-items:flex-end; gap:0.75rem;">
+                  <div class="form-group" style="flex:2; margin:0;">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="name" class="form-control" value="{{ a.name }}" required>
+                  </div>
+                  <div class="form-group" style="flex:3; margin:0;">
+                    <label class="form-label">Descripción</label>
+                    <input type="text" name="description" class="form-control" value="{{ a.description or '' }}">
+                  </div>
+                  <div class="form-group" style="flex:1; margin:0;">
+                    <label class="form-label">Orden</label>
+                    <input type="number" name="sort_order" class="form-control" value="{{ a.sort_order }}" min="1">
+                  </div>
+                  <div style="display:flex; gap:0.5rem; padding-bottom:0.05rem;">
+                    <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+                    <button type="button" class="btn btn-ghost btn-sm"
+                            onclick="toggleEditArea({{ a.id }})">Cancelar</button>
+                  </div>
+                </div>
+              </form>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
+    {% else %}
+    <p class="text-muted" style="margin-bottom:1.5rem;">No hay áreas configuradas para el ciclo activo.</p>
     {% endif %}
 
     <h3 class="form-section-title">Nueva Área</h3>
@@ -227,6 +266,15 @@
     </form>
   </div>
 </div>
+
+{% block extra_js %}
+<script>
+function toggleEditArea(id) {
+  const editRow = document.getElementById('area-edit-' + id);
+  editRow.style.display = editRow.style.display === 'none' ? 'table-row' : 'none';
+}
+</script>
+{% endblock %}
 
 <!-- Grading Scales -->
 <div class="card">

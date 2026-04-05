@@ -268,4 +268,44 @@
     activeNav.style.animation = 'slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both';
   }
 
+  // ==========================================================
+  // Auto-dismiss flash messages after 5 seconds
+  // ==========================================================
+  document.querySelectorAll('.alert').forEach(function(alert) {
+    setTimeout(function() {
+      alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      alert.style.opacity = '0';
+      alert.style.transform = 'translateY(-8px)';
+      setTimeout(function() { alert.remove(); }, 500);
+    }, 5000);
+  });
+
 })();
+
+// ==========================================================
+// Photo preview helper (global — called from inline onchange)
+// ==========================================================
+function previewPhoto(input, imgId, placeholderId) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  // Validate size (5 MB)
+  if (file.size > 5 * 1024 * 1024) {
+    alert('La imagen es demasiado grande. El tamaño máximo es 5 MB.');
+    input.value = '';
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = document.getElementById(imgId);
+    var placeholder = placeholderId ? document.getElementById(placeholderId) : null;
+    if (img) {
+      img.src = e.target.result;
+      img.style.display = 'block';
+      img.style.animation = 'fadeIn 0.4s ease both';
+    }
+    if (placeholder) {
+      placeholder.style.display = 'none';
+    }
+  };
+  reader.readAsDataURL(file);
+}

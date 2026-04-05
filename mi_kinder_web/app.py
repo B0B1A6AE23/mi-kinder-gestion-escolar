@@ -5,11 +5,11 @@ import sqlite3
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from flask import Flask, g
+from flask import Flask, g, send_from_directory
 from flask_login import LoginManager
 
 from mi_kinder_web.config import (
-    DB_PATH, SECRET_KEY, DATA_DIR,
+    DB_PATH, SECRET_KEY, DATA_DIR, PHOTOS_DIR,
     PERMANENT_SESSION_LIFETIME, REMEMBER_COOKIE_DURATION,
     SESSION_COOKIE_HTTPONLY, SESSION_COOKIE_SAMESITE,
 )
@@ -101,9 +101,15 @@ def create_app():
         }
         return labels.get(value, value)
 
+    # Photo serving route — serves uploaded profile/student photos
+    @app.route("/photos/<path:filename>")
+    def serve_photo(filename):
+        return send_from_directory(PHOTOS_DIR, filename)
+
     # Context processors
     @app.context_processor
     def inject_globals():
+        from flask import url_for
         from flask_login import current_user
         db = get_db()
         active_year = db.execute(
@@ -115,11 +121,19 @@ def create_app():
                 "SELECT * FROM periods WHERE school_year_id = ? ORDER BY sort_order DESC LIMIT 1",
                 (active_year["id"],),
             ).fetchone()
+
+        def photo_url(path):
+            """Return URL for a stored photo filename, or None if no photo."""
+            if not path:
+                return None
+            return url_for("serve_photo", filename=path)
+
         return dict(
             app_name="Colegio CAPI",
             active_year=active_year,
             current_period=current_period,
             is_directora=current_user.is_authenticated and current_user.role == "directora",
+            photo_url=photo_url,
         )
 
     # Register blueprints

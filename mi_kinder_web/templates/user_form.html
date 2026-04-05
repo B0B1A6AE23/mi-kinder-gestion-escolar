@@ -11,7 +11,8 @@
 
 <div class="card" style="max-width: 600px;">
   <div class="card-body">
-    <form method="POST" action="{{ url_for('users.edit', user_id=user.id) if user else url_for('users.create') }}">
+    <form method="POST" action="{{ url_for('users.edit', user_id=user.id) if user else url_for('users.create') }}"
+          enctype="multipart/form-data">
 
       {% if not user %}
       <div class="form-group">
@@ -29,6 +30,30 @@
                value="{{ user.full_name if user else '' }}" required>
       </div>
 
+      {% if user %}
+      <div class="form-group">
+        <label class="form-label">Foto de Perfil</label>
+        <div class="photo-upload-row">
+          <div class="photo-preview-wrap" id="photoPreviewWrap">
+            {% set up = photo_url(user.photo_path) if user.photo_path is defined else None %}
+            {% if up %}
+            <img src="{{ up }}" alt="Foto" class="photo-preview-img" id="photoPreviewImg">
+            {% else %}
+            <div class="photo-placeholder" id="photoPlaceholder">
+              <span>{{ user.full_name[:1] }}</span>
+            </div>
+            <img src="" alt="Foto" class="photo-preview-img" id="photoPreviewImg" style="display:none;">
+            {% endif %}
+          </div>
+          <div style="flex:1;">
+            <input type="file" id="user_photo" name="photo" class="form-control" accept="image/*"
+                   onchange="previewPhoto(this,'photoPreviewImg','photoPlaceholder')">
+            <small class="form-help">JPG, PNG o WEBP. Máx. 5 MB.</small>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
       <div class="form-group">
         <label for="password" class="form-label">
           {{ 'Nueva Contraseña (dejar vacío para no cambiar)' if user else 'Contraseña *' }}
@@ -40,10 +65,15 @@
 
       <div class="form-group">
         <label for="role" class="form-label">Rol</label>
+        {% if user and user.role == 'directora' %}
+        <input type="text" class="form-control" value="Directora" disabled>
+        <small class="form-help">El rol de directora no puede modificarse desde aquí.</small>
+        {% else %}
         <select id="role" name="role" class="form-control">
-          <option value="maestra" {{ 'selected' if user and user.role == 'maestra' }}>Maestra</option>
-          <option value="directora" {{ 'selected' if user and user.role == 'directora' }}>Directora</option>
+          <option value="maestra" selected>Maestra</option>
         </select>
+        <small class="form-help">Las cuentas de directora se gestionan directamente en la base de datos.</small>
+        {% endif %}
       </div>
 
       <div class="form-group">

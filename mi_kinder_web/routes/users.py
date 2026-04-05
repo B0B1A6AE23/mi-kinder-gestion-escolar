@@ -1,9 +1,19 @@
 """Rutas de gestion de usuarios."""
+import os
+import uuid
 import bcrypt
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
 
 from mi_kinder_web.app import get_db
+from mi_kinder_web.config import PHOTOS_DIR
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
+
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 users_bp = Blueprint("users", __name__)
 
@@ -57,7 +67,8 @@ def create():
         username = request.form.get("username", "").strip().lower()
         password = request.form.get("password", "")
         full_name = request.form.get("full_name", "").strip()
-        role = request.form.get("role", "maestra")
+        # Security: only 'maestra' role can be created — directoras are seeded, not created via UI
+        role = "maestra"
         group_ids = request.form.getlist("group_ids")
 
         if not username or not password or not full_name:
@@ -153,18 +164,28 @@ def edit(user_id):
                 "user_form.html", user=user, groups=groups, current_groups=current_groups
             )
 
+        # Handle photo upload for user
+        photo_path = user["photo_path"] if "photo_path" in user.keys() else None
+        if "photo" in request.files:
+            photo = request.files["photo"]
+            if photo.filename and allowed_file(photo.filename):
+                ext = photo.filename.rsplit(".", 1)[1].lower()
+                filename = f"user_{uuid.uuid4().hex}.{ext}"
+                photo.save(os.path.join(PHOTOS_DIR, filename))
+                photo_path = filename
+
         if password:
             password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
             db.execute(
                 """UPDATE users SET full_name=?, role=?, password_hash=?, is_active=?,
-                   updated_at=datetime('now') WHERE id=?""",
-                (full_name, role, password_hash, int(is_active), user_id),
+                   photo_path=?, updated_at=datetime('now') WHERE id=?""",
+                (full_name, role, password_hash, int(is_active), photo_path, user_id),
             )
         else:
             db.execute(
                 """UPDATE users SET full_name=?, role=?, is_active=?,
-                   updated_at=datetime('now') WHERE id=?""",
-                (full_name, role, int(is_active), user_id),
+                   photo_path=?, updated_at=datetime('now') WHERE id=?""",
+                (full_name, role, int(is_active), photo_path, user_id),
             )
 
         # Update group assignments

@@ -66,8 +66,25 @@
                  value="{{ student.curp if student else '' }}" placeholder="18 caracteres" style="text-transform:uppercase;">
         </div>
         <div class="form-group" style="flex:1;">
-          <label for="photo" class="form-label">Foto</label>
-          <input type="file" id="photo" name="photo" class="form-control" accept="image/*">
+          <label for="photo" class="form-label">Foto del Alumno</label>
+          <div class="photo-upload-row">
+            <div class="photo-preview-wrap">
+              {% set sp = photo_url(student.photo_path) if student and student.photo_path else None %}
+              {% if sp %}
+              <img src="{{ sp }}" alt="Foto" class="photo-preview-img" id="studentPhotoPreview">
+              {% else %}
+              <div class="photo-placeholder" id="studentPhotoPlaceholder">
+                <span>{{ student.first_name[:1] if student else '?' }}</span>
+              </div>
+              <img src="" alt="Foto" class="photo-preview-img" id="studentPhotoPreview" style="display:none;">
+              {% endif %}
+            </div>
+            <div>
+              <input type="file" id="photo" name="photo" class="form-control" accept="image/*"
+                     onchange="previewPhoto(this,'studentPhotoPreview','studentPhotoPlaceholder')">
+              <small class="form-help">JPG, PNG o WEBP. Máx. 5 MB.</small>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -96,6 +113,28 @@
           <label for="address" class="form-label">Dirección</label>
           <input type="text" id="address" name="address" class="form-control"
                  value="{{ student.address if student else '' }}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="guardian_photo" class="form-label">Foto del Tutor</label>
+        <div class="photo-upload-row">
+          <div class="photo-preview-wrap">
+            {% set gp = photo_url(student.guardian_photo_path) if student and student.guardian_photo_path is defined and student.guardian_photo_path else None %}
+            {% if gp %}
+            <img src="{{ gp }}" alt="Foto tutor" class="photo-preview-img" id="guardianPhotoPreview">
+            {% else %}
+            <div class="photo-placeholder" id="guardianPhotoPlaceholder">
+              <span>👤</span>
+            </div>
+            <img src="" alt="Foto tutor" class="photo-preview-img" id="guardianPhotoPreview" style="display:none;">
+            {% endif %}
+          </div>
+          <div>
+            <input type="file" id="guardian_photo" name="guardian_photo" class="form-control" accept="image/*"
+                   onchange="previewPhoto(this,'guardianPhotoPreview','guardianPhotoPlaceholder')">
+            <small class="form-help">Foto del tutor o responsable. JPG, PNG o WEBP. Máx. 5 MB.</small>
+          </div>
         </div>
       </div>
 

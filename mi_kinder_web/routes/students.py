@@ -14,6 +14,21 @@ students_bp = Blueprint("students", __name__)
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 
 
+def _user_group_ids(db, user_id):
+    """Return set of group_ids assigned to this user."""
+    rows = db.execute(
+        "SELECT group_id FROM user_group_assignments WHERE user_id = ?", (user_id,)
+    ).fetchall()
+    return {r["group_id"] for r in rows}
+
+
+def _can_access_student(db, student, user):
+    """Directoras can access all students; maestras only their assigned groups."""
+    if user.role == "directora":
+        return True
+    return student["group_id"] in _user_group_ids(db, user.id)
+
+
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -30,41 +45,92 @@ def index():
     group_id = request.args.get("group_id", type=int)
     search_q = request.args.get("q", "").strip()
 
-    groups = db.execute(
-        "SELECT * FROM groups_ WHERE school_year_id = ? AND is_active = 1 ORDER BY name",
-        (year_id,),
-    ).fetchall()
+    # Maestras only see groups they're assigned to
+    if current_user.role == "directora":
+        groups = db.execute(
+            "SELECT * FROM groups_ WHERE school_year_id = ? AND is_active = 1 ORDER BY name",
+            (year_id,),
+        ).fetchall()
+    else:
+        my_ids = _user_group_ids(db, current_user.id)
+        if my_ids:
+            placeholders = ",".join("?" * len(my_ids))
+            groups = db.execute(
+                f"SELECT * FROM groups_ WHERE id IN ({placeholders}) AND is_active = 1 ORDER BY name",
+                list(my_ids),
+            ).fetchall()
+        else:
+            groups = []
+
+    # For maestras, restrict to their assigned group IDs
+    allowed_gids = None
+    if current_user.role != "directora":
+        allowed_gids = _user_group_ids(db, current_user.id)
 
     if search_q:
         pattern = f"%{search_q}%"
-        students = db.execute(
-            """SELECT s.*, g.name as group_name
-               FROM students s
-               JOIN groups_ g ON g.id = s.group_id
-               WHERE g.school_year_id = ? AND s.is_active = 1
-                 AND (s.first_name LIKE ? OR s.last_name LIKE ?
-                      OR s.second_last_name LIKE ? OR s.curp LIKE ?)
-               ORDER BY s.last_name, s.first_name LIMIT 100""",
-            (year_id, pattern, pattern, pattern, pattern),
-        ).fetchall()
+        if allowed_gids is not None:
+            if not allowed_gids:
+                students = []
+            else:
+                ph = ",".join("?" * len(allowed_gids))
+                students = db.execute(
+                    f"""SELECT s.*, g.name as group_name
+                       FROM students s
+                       JOIN groups_ g ON g.id = s.group_id
+                       WHERE g.id IN ({ph}) AND s.is_active = 1
+                         AND (s.first_name LIKE ? OR s.last_name LIKE ?
+                              OR s.second_last_name LIKE ? OR s.curp LIKE ?)
+                       ORDER BY s.last_name, s.first_name LIMIT 100""",
+                    (*list(allowed_gids), pattern, pattern, pattern, pattern),
+                ).fetchall()
+        else:
+            students = db.execute(
+                """SELECT s.*, g.name as group_name
+                   FROM students s
+                   JOIN groups_ g ON g.id = s.group_id
+                   WHERE g.school_year_id = ? AND s.is_active = 1
+                     AND (s.first_name LIKE ? OR s.last_name LIKE ?
+                          OR s.second_last_name LIKE ? OR s.curp LIKE ?)
+                   ORDER BY s.last_name, s.first_name LIMIT 100""",
+                (year_id, pattern, pattern, pattern, pattern),
+            ).fetchall()
     elif group_id:
-        students = db.execute(
-            """SELECT s.*, g.name as group_name
-               FROM students s
-               JOIN groups_ g ON g.id = s.group_id
-               WHERE s.group_id = ? AND s.is_active = 1
-               ORDER BY s.last_name, s.first_name""",
-            (group_id,),
-        ).fetchall()
+        # If maestra tries to view a group not in their list, deny
+        if allowed_gids is not None and group_id not in allowed_gids:
+            students = []
+        else:
+            students = db.execute(
+                """SELECT s.*, g.name as group_name
+                   FROM students s
+                   JOIN groups_ g ON g.id = s.group_id
+                   WHERE s.group_id = ? AND s.is_active = 1
+                   ORDER BY s.last_name, s.first_name""",
+                (group_id,),
+            ).fetchall()
     else:
-        students = db.execute(
-            """SELECT s.*, g.name as group_name
-               FROM students s
-               JOIN groups_ g ON g.id = s.group_id
-               WHERE g.school_year_id = ? AND s.is_active = 1
-               ORDER BY s.last_name, s.first_name LIMIT 200""",
-            (year_id,),
-        ).fetchall()
+        if allowed_gids is not None:
+            if not allowed_gids:
+                students = []
+            else:
+                ph = ",".join("?" * len(allowed_gids))
+                students = db.execute(
+                    f"""SELECT s.*, g.name as group_name
+                       FROM students s
+                       JOIN groups_ g ON g.id = s.group_id
+                       WHERE s.group_id IN ({ph}) AND s.is_active = 1
+                       ORDER BY s.last_name, s.first_name LIMIT 200""",
+                    list(allowed_gids),
+                ).fetchall()
+        else:
+            students = db.execute(
+                """SELECT s.*, g.name as group_name
+                   FROM students s
+                   JOIN groups_ g ON g.id = s.group_id
+                   WHERE g.school_year_id = ? AND s.is_active = 1
+                   ORDER BY s.last_name, s.first_name LIMIT 200""",
+                (year_id,),
+            ).fetchall()
 
     return render_template(
         "students.html",
@@ -89,6 +155,10 @@ def detail(student_id):
 
     if not student:
         flash("Alumno no encontrado.", "error")
+        return redirect(url_for("students.index"))
+
+    if not _can_access_student(db, student, current_user):
+        flash("No tienes permiso para ver este alumno.", "error")
         return redirect(url_for("students.index"))
 
     # Attendance summary
@@ -154,10 +224,22 @@ def create():
     ).fetchone()
     year_id = active_year["id"] if active_year else 0
 
-    groups = db.execute(
-        "SELECT * FROM groups_ WHERE school_year_id = ? AND is_active = 1 ORDER BY name",
-        (year_id,),
-    ).fetchall()
+    # Maestras only see their own groups
+    if current_user.role == "directora":
+        groups = db.execute(
+            "SELECT * FROM groups_ WHERE school_year_id = ? AND is_active = 1 ORDER BY name",
+            (year_id,),
+        ).fetchall()
+    else:
+        my_ids = _user_group_ids(db, current_user.id)
+        if my_ids:
+            ph = ",".join("?" * len(my_ids))
+            groups = db.execute(
+                f"SELECT * FROM groups_ WHERE id IN ({ph}) AND is_active = 1 ORDER BY name",
+                list(my_ids),
+            ).fetchall()
+        else:
+            groups = []
 
     if request.method == "POST":
         first_name = request.form.get("first_name", "").strip()
@@ -179,22 +261,39 @@ def create():
             flash("Nombre, apellido y grupo son obligatorios.", "error")
             return render_template("student_form.html", student=None, groups=groups)
 
-        # Handle photo upload
+        # Security: maestras cannot assign to groups outside their assignment
+        if current_user.role != "directora":
+            allowed = _user_group_ids(db, current_user.id)
+            if group_id not in allowed:
+                flash("No puedes asignar alumnos a ese grupo.", "error")
+                return render_template("student_form.html", student=None, groups=groups)
+
+        # Handle student photo upload
         photo_path = None
         if "photo" in request.files:
             photo = request.files["photo"]
             if photo.filename and allowed_file(photo.filename):
                 ext = photo.filename.rsplit(".", 1)[1].lower()
-                filename = f"{uuid.uuid4().hex}.{ext}"
+                filename = f"student_{uuid.uuid4().hex}.{ext}"
                 photo.save(os.path.join(PHOTOS_DIR, filename))
                 photo_path = filename
+
+        # Handle guardian photo upload
+        guardian_photo_path = None
+        if "guardian_photo" in request.files:
+            gphoto = request.files["guardian_photo"]
+            if gphoto.filename and allowed_file(gphoto.filename):
+                ext = gphoto.filename.rsplit(".", 1)[1].lower()
+                gfilename = f"guardian_{uuid.uuid4().hex}.{ext}"
+                gphoto.save(os.path.join(PHOTOS_DIR, gfilename))
+                guardian_photo_path = gfilename
 
         db.execute(
             """INSERT INTO students (group_id, first_name, last_name, second_last_name,
                curp, birth_date, gender, photo_path, enrollment_date,
                guardian_name, guardian_phone, guardian_email, address,
-               blood_type, allergies, medical_notes, is_active)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)""",
+               blood_type, allergies, medical_notes, guardian_photo_path, is_active)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)""",
             (
                 group_id, first_name, last_name,
                 second_last_name or None, curp or None,
@@ -203,7 +302,7 @@ def create():
                 guardian_name or None, guardian_phone or None,
                 guardian_email or None, address or None,
                 blood_type or None, allergies or None,
-                medical_notes or None,
+                medical_notes or None, guardian_photo_path,
             ),
         )
         db.commit()
@@ -227,15 +326,31 @@ def edit(student_id):
         flash("Alumno no encontrado.", "error")
         return redirect(url_for("students.index"))
 
+    if not _can_access_student(db, student, current_user):
+        flash("No tienes permiso para editar este alumno.", "error")
+        return redirect(url_for("students.index"))
+
     active_year = db.execute(
         "SELECT * FROM school_years WHERE is_active = 1"
     ).fetchone()
     year_id = active_year["id"] if active_year else 0
 
-    groups = db.execute(
-        "SELECT * FROM groups_ WHERE school_year_id = ? AND is_active = 1 ORDER BY name",
-        (year_id,),
-    ).fetchall()
+    # Maestras only pick from their own groups
+    if current_user.role == "directora":
+        groups = db.execute(
+            "SELECT * FROM groups_ WHERE school_year_id = ? AND is_active = 1 ORDER BY name",
+            (year_id,),
+        ).fetchall()
+    else:
+        my_ids = _user_group_ids(db, current_user.id)
+        if my_ids:
+            ph = ",".join("?" * len(my_ids))
+            groups = db.execute(
+                f"SELECT * FROM groups_ WHERE id IN ({ph}) AND is_active = 1 ORDER BY name",
+                list(my_ids),
+            ).fetchall()
+        else:
+            groups = []
 
     if request.method == "POST":
         first_name = request.form.get("first_name", "").strip()
@@ -257,21 +372,34 @@ def edit(student_id):
             flash("Nombre, apellido y grupo son obligatorios.", "error")
             return render_template("student_form.html", student=student, groups=groups)
 
-        # Handle photo upload
+        # Handle student photo upload
         photo_path = student["photo_path"]
         if "photo" in request.files:
             photo = request.files["photo"]
             if photo.filename and allowed_file(photo.filename):
                 ext = photo.filename.rsplit(".", 1)[1].lower()
-                filename = f"{uuid.uuid4().hex}.{ext}"
+                filename = f"student_{uuid.uuid4().hex}.{ext}"
                 photo.save(os.path.join(PHOTOS_DIR, filename))
                 photo_path = filename
+
+        # Handle guardian photo upload
+        try:
+            guardian_photo_path = student["guardian_photo_path"]
+        except (KeyError, IndexError):
+            guardian_photo_path = None
+        if "guardian_photo" in request.files:
+            gphoto = request.files["guardian_photo"]
+            if gphoto.filename and allowed_file(gphoto.filename):
+                ext = gphoto.filename.rsplit(".", 1)[1].lower()
+                gfilename = f"guardian_{uuid.uuid4().hex}.{ext}"
+                gphoto.save(os.path.join(PHOTOS_DIR, gfilename))
+                guardian_photo_path = gfilename
 
         db.execute(
             """UPDATE students SET group_id=?, first_name=?, last_name=?,
                second_last_name=?, curp=?, birth_date=?, gender=?, photo_path=?,
                guardian_name=?, guardian_phone=?, guardian_email=?, address=?,
-               blood_type=?, allergies=?, medical_notes=?,
+               blood_type=?, allergies=?, medical_notes=?, guardian_photo_path=?,
                updated_at=datetime('now') WHERE id=?""",
             (
                 group_id, first_name, last_name,
@@ -280,7 +408,7 @@ def edit(student_id):
                 guardian_name or None, guardian_phone or None,
                 guardian_email or None, address or None,
                 blood_type or None, allergies or None,
-                medical_notes or None, student_id,
+                medical_notes or None, guardian_photo_path, student_id,
             ),
         )
         db.commit()

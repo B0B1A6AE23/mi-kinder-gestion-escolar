@@ -2,7 +2,7 @@
 import sqlite3
 from mi_kinder.database.schema import SCHEMA_SQL
 
-CURRENT_VERSION = 1
+CURRENT_VERSION = 2
 
 
 def run_migrations(conn: sqlite3.Connection):
@@ -35,5 +35,12 @@ def run_migrations(conn: sqlite3.Connection):
 def _get_migrations() -> list[tuple[int, str, str]]:
     """Retorna lista de (version, descripcion, sql) para migraciones futuras."""
     return [
-        # (2, "Agregar campo X", "ALTER TABLE ..."),
+        (
+            2,
+            "Agregar foto de perfil a usuarios y foto de tutor a alumnos",
+            """
+ALTER TABLE users ADD COLUMN photo_path TEXT;
+ALTER TABLE students ADD COLUMN guardian_photo_path TEXT;
+""",
+        ),
     ]

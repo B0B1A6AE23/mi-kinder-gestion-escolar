@@ -1,11 +1,21 @@
 """Rutas de perfil de usuario."""
+import os
+import uuid
 import bcrypt
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
 
 from mi_kinder_web.app import get_db
+from mi_kinder_web.config import PHOTOS_DIR
 
 profile_bp = Blueprint("profile", __name__)
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
+
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @profile_bp.route("/profile")
@@ -70,7 +80,35 @@ def update():
         )
         flash("Contraseña actualizada.", "success")
 
+    # Handle profile photo upload
+    if "photo" in request.files:
+        photo = request.files["photo"]
+        if photo.filename and allowed_file(photo.filename):
+            ext = photo.filename.rsplit(".", 1)[1].lower()
+            filename = f"user_{uuid.uuid4().hex}.{ext}"
+            photo.save(os.path.join(PHOTOS_DIR, filename))
+            db.execute(
+                "UPDATE users SET photo_path=?, updated_at=datetime('now') WHERE id=?",
+                (filename, current_user.id),
+            )
+            flash("Foto de perfil actualizada.", "success")
+        elif photo.filename:
+            flash("Formato de imagen no válido. Usa JPG, PNG, GIF o WEBP.", "error")
+
     db.commit()
     if full_name and not new_password:
         flash("Perfil actualizado.", "success")
+    return redirect(url_for("profile.index"))
+
+
+@profile_bp.route("/profile/photo/delete", methods=["POST"])
+@login_required
+def delete_photo():
+    db = get_db()
+    db.execute(
+        "UPDATE users SET photo_path=NULL, updated_at=datetime('now') WHERE id=?",
+        (current_user.id,),
+    )
+    db.commit()
+    flash("Foto eliminada.", "success")
     return redirect(url_for("profile.index"))

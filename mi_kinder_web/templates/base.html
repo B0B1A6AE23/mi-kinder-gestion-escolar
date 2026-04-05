@@ -103,7 +103,12 @@
         <a href="{{ url_for('profile.index') }}"
            class="nav-item {% if request.endpoint and request.endpoint.startswith('profile.') %}active{% endif %}"
            title="{{ current_user.full_name }}">
+          {% set sbavurl = photo_url(current_user.photo_path) if current_user.photo_path else None %}
+          {% if sbavurl %}
+          <img src="{{ sbavurl }}" alt="" class="nav-icon nav-avatar" aria-hidden="true">
+          {% else %}
           <span class="nav-icon" aria-hidden="true">👤</span>
+          {% endif %}
           <span class="nav-label">{{ current_user.full_name }}</span>
         </a>
         <a href="{{ url_for('auth.logout') }}"
@@ -135,7 +140,12 @@
           {% endif %}
         </div>
         <div class="topbar-user">
+          {% set avurl = photo_url(current_user.photo_path) if current_user.photo_path else None %}
+          {% if avurl %}
+          <img src="{{ avurl }}" alt="{{ current_user.full_name }}" class="user-avatar user-avatar-img" aria-hidden="true">
+          {% else %}
           <div class="user-avatar" aria-hidden="true">{{ current_user.full_name[:1] }}</div>
+          {% endif %}
           <span class="topbar-role">{{ current_user.role|capitalize }}</span>
           <span class="topbar-name">{{ current_user.full_name }}</span>
         </div>

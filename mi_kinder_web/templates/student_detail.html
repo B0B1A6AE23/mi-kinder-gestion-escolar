@@ -22,6 +22,17 @@
       <h2 class="card-title">Datos Personales</h2>
     </div>
     <div class="card-body">
+      {% set sp = photo_url(student.photo_path) if student.photo_path else None %}
+      {% if sp %}
+      <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem;">
+        <img src="{{ sp }}" alt="{{ student.first_name }}"
+             style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:3px solid var(--capi-rosa);">
+        <div>
+          <strong style="font-size:1.05rem;">{{ student.first_name }} {{ student.last_name }}</strong>
+          <br><span class="text-muted">{{ student.group_name }}</span>
+        </div>
+      </div>
+      {% endif %}
       <dl class="detail-list">
         <div class="detail-item">
           <dt>CURP</dt>
@@ -61,6 +72,14 @@
       <h2 class="card-title">Tutor / Responsable</h2>
     </div>
     <div class="card-body">
+      {% if student.guardian_photo_path is defined and student.guardian_photo_path %}
+      {% set gp = photo_url(student.guardian_photo_path) %}
+      <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem;">
+        <img src="{{ gp }}" alt="{{ student.guardian_name or 'Tutor' }}"
+             style="width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid var(--capi-azul);">
+        <strong>{{ student.guardian_name or 'Tutor' }}</strong>
+      </div>
+      {% endif %}
       <dl class="detail-list">
         <div class="detail-item">
           <dt>Nombre</dt>

@@ -202,3 +202,75 @@ def create_area():
     db.commit()
     flash(f"Área de evaluación '{name}' creada.", "success")
     return redirect(url_for("settings.index"))
+
+
+@settings_bp.route("/settings/area/<int:area_id>/edit", methods=["POST"])
+@login_required
+def edit_area(area_id):
+    if current_user.role != "directora":
+        flash("Acceso restringido.", "error")
+        return redirect(url_for("dashboard.index"))
+
+    db = get_db()
+    area = db.execute(
+        "SELECT * FROM evaluation_areas WHERE id = ?", (area_id,)
+    ).fetchone()
+    if not area:
+        flash("Área no encontrada.", "error")
+        return redirect(url_for("settings.index"))
+
+    name = request.form.get("name", "").strip()
+    description = request.form.get("description", "").strip()
+    sort_order = request.form.get("sort_order", type=int, default=area["sort_order"])
+
+    if not name:
+        flash("El nombre del área es obligatorio.", "error")
+        return redirect(url_for("settings.index"))
+
+    db.execute(
+        "UPDATE evaluation_areas SET name=?, description=?, sort_order=? WHERE id=?",
+        (name, description or None, sort_order, area_id),
+    )
+    db.commit()
+    flash(f"Área '{name}' actualizada.", "success")
+    return redirect(url_for("settings.index"))
+
+
+@settings_bp.route("/settings/area/<int:area_id>/delete", methods=["POST"])
+@login_required
+def delete_area(area_id):
+    if current_user.role != "directora":
+        flash("Acceso restringido.", "error")
+        return redirect(url_for("dashboard.index"))
+
+    db = get_db()
+    area = db.execute(
+        "SELECT * FROM evaluation_areas WHERE id = ?", (area_id,)
+    ).fetchone()
+    if not area:
+        flash("Área no encontrada.", "error")
+        return redirect(url_for("settings.index"))
+
+    # Check if there are evaluations using this area
+    eval_count = db.execute(
+        "SELECT COUNT(*) as cnt FROM evaluations WHERE evaluation_area_id = ?",
+        (area_id,),
+    ).fetchone()["cnt"]
+
+    if eval_count > 0:
+        # Soft-delete: mark inactive so history is preserved
+        db.execute(
+            "UPDATE evaluation_areas SET is_active=0 WHERE id=?", (area_id,)
+        )
+        db.commit()
+        flash(
+            f"Área desactivada (tiene {eval_count} evaluaciones registradas — los datos históricos se conservan).",
+            "warning",
+        )
+    else:
+        # Hard-delete: no evaluations, safe to remove
+        db.execute("DELETE FROM evaluation_areas WHERE id=?", (area_id,))
+        db.commit()
+        flash("Área eliminada.", "success")
+
+    return redirect(url_for("settings.index"))

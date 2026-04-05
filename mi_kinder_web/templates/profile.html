@@ -6,7 +6,43 @@
   <h1 class="page-title">Mi Perfil</h1>
 </div>
 
-<div class="detail-grid" style="max-width: 800px;">
+<div class="detail-grid" style="max-width: 860px;">
+
+  <!-- Photo Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Foto de Perfil</h2>
+    </div>
+    <div class="card-body" style="display:flex; flex-direction:column; align-items:center; gap:1rem;">
+      {% set purl = photo_url(user.photo_path) if user.photo_path is defined else None %}
+      <div class="profile-photo-circle" id="profilePhotoCircle">
+        {% if purl %}
+        <img src="{{ purl }}" alt="{{ user.full_name }}" class="profile-photo-img" id="profilePhotoPreview">
+        {% else %}
+        <span class="profile-photo-initials" id="profilePhotoInitials">{{ user.full_name[:1] }}</span>
+        <img src="" alt="{{ user.full_name }}" class="profile-photo-img" id="profilePhotoPreview" style="display:none;">
+        {% endif %}
+      </div>
+
+      <form method="POST" action="{{ url_for('profile.update') }}" enctype="multipart/form-data"
+            style="width:100%; text-align:center;">
+        <label class="btn btn-outline btn-sm" style="cursor:pointer; display:inline-block;">
+          📷 Cambiar foto
+          <input type="file" name="photo" accept="image/*" style="display:none;"
+                 onchange="previewPhoto(this,'profilePhotoPreview','profilePhotoInitials'); this.form.submit();">
+        </label>
+        <small class="form-help" style="display:block; margin-top:0.4rem;">JPG, PNG o WEBP. Máx. 5 MB.</small>
+      </form>
+
+      {% if user.photo_path is defined and user.photo_path %}
+      <form method="POST" action="{{ url_for('profile.delete_photo') }}">
+        <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--capi-rojo);"
+                onclick="return confirm('¿Eliminar foto de perfil?')">🗑 Eliminar foto</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
   <!-- Profile Info -->
   <div class="card">
     <div class="card-header">
@@ -47,34 +83,38 @@
   </div>
 
   <!-- Update Form -->
-  <div class="card">
+  <div class="card" style="grid-column: 1 / -1;">
     <div class="card-header">
       <h2 class="card-title">Actualizar Perfil</h2>
     </div>
     <div class="card-body">
-      <form method="POST" action="{{ url_for('profile.update') }}">
+      <form method="POST" action="{{ url_for('profile.update') }}" enctype="multipart/form-data">
         <div class="form-group">
           <label for="full_name" class="form-label">Nombre Completo</label>
           <input type="text" id="full_name" name="full_name" class="form-control"
-                 value="{{ user.full_name }}">
+                 value="{{ user.full_name }}" style="max-width:400px;">
         </div>
 
         <h3 class="form-section-title" style="margin-top:1.5rem;">Cambiar Contraseña</h3>
 
-        <div class="form-group">
-          <label for="current_password" class="form-label">Contraseña Actual</label>
-          <input type="password" id="current_password" name="current_password" class="form-control"
-                 autocomplete="current-password">
+        <div class="form-row" style="max-width:600px;">
+          <div class="form-group" style="flex:1;">
+            <label for="current_password" class="form-label">Contraseña Actual</label>
+            <input type="password" id="current_password" name="current_password" class="form-control"
+                   autocomplete="current-password">
+          </div>
         </div>
-        <div class="form-group">
-          <label for="new_password" class="form-label">Nueva Contraseña</label>
-          <input type="password" id="new_password" name="new_password" class="form-control"
-                 autocomplete="new-password" placeholder="Mínimo 4 caracteres">
-        </div>
-        <div class="form-group">
-          <label for="confirm_password" class="form-label">Confirmar Nueva Contraseña</label>
-          <input type="password" id="confirm_password" name="confirm_password" class="form-control"
-                 autocomplete="new-password">
+        <div class="form-row" style="max-width:600px;">
+          <div class="form-group" style="flex:1;">
+            <label for="new_password" class="form-label">Nueva Contraseña</label>
+            <input type="password" id="new_password" name="new_password" class="form-control"
+                   autocomplete="new-password" placeholder="Mínimo 4 caracteres">
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label for="confirm_password" class="form-label">Confirmar Nueva Contraseña</label>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control"
+                   autocomplete="new-password">
+          </div>
         </div>
 
         <div class="form-actions">
@@ -83,5 +123,6 @@
       </form>
     </div>
   </div>
+
 </div>
 {% endblock %}

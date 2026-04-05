@@ -25,7 +25,18 @@
         <tbody>
           {% for u in users %}
           <tr>
-            <td><strong>{{ u.full_name }}</strong></td>
+            <td>
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                {% set uav = photo_url(u.photo_path) if u.photo_path is defined and u.photo_path else None %}
+                {% if uav %}
+                <img src="{{ uav }}" alt="{{ u.full_name }}"
+                     style="width:36px; height:36px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid var(--border);">
+                {% else %}
+                <div style="width:36px; height:36px; border-radius:50%; background:var(--gradient-capi); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-weight:700; color:white; font-size:0.9rem;">{{ u.full_name[:1] }}</div>
+                {% endif %}
+                <strong>{{ u.full_name }}</strong>
+              </div>
+            </td>
             <td><code>{{ u.username }}</code></td>
             <td>
               <span class="badge badge-{{ 'info' if u.role == 'directora' else 'success' }}">
