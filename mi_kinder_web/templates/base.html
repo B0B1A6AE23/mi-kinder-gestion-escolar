@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1A3A5C">
+  <meta name="theme-color" content="#142742">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>{% block title %}{{ app_name }}{% endblock %}</title>
@@ -13,41 +13,6 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/kinder-design-system.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
-  <style>
-    .sidebar-logo-mark {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #FFD54F 0%, #F9A825 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(255, 213, 79, 0.35);
-    }
-    .sidebar-logo-mark span {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: #0F2035;
-      letter-spacing: -0.5px;
-    }
-    .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #1A3A5C, #2D5F8A);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 700;
-      font-size: 0.8rem;
-      flex-shrink: 0;
-      box-shadow: 0 2px 6px rgba(26, 58, 92, 0.2);
-    }
-  </style>
   {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -55,8 +20,11 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-logo-mark">
-          <span>CA</span>
+        <div class="capi-blocks" title="Colegio CAPI">
+          <span class="cb cb-c">C</span>
+          <span class="cb cb-a">A</span>
+          <span class="cb cb-p">P</span>
+          <span class="cb cb-i">I</span>
         </div>
         <div>
           <h2 class="sidebar-title">Colegio CAPI</h2>
@@ -103,9 +71,9 @@
         </a>
         <a href="{{ url_for('charts.index') }}"
            class="nav-item {% if request.endpoint and request.endpoint.startswith('charts.') %}active{% endif %}"
-           title="Gráficas">
+           title="Graficas">
           <span class="nav-icon" aria-hidden="true">📈</span>
-          <span class="nav-label">Gráficas</span>
+          <span class="nav-label">Graficas</span>
         </a>
         <a href="{{ url_for('socioemocional.index') }}"
            class="nav-item {% if request.endpoint and request.endpoint.startswith('socioemocional.') %}active{% endif %}"
@@ -140,10 +108,10 @@
         </a>
         <a href="{{ url_for('auth.logout') }}"
            class="nav-item nav-logout"
-           aria-label="Cerrar sesión"
-           title="Cerrar sesión">
+           aria-label="Cerrar sesion"
+           title="Cerrar sesion">
           <span class="nav-icon" aria-hidden="true">🚪</span>
-          <span class="nav-label">Cerrar Sesión</span>
+          <span class="nav-label">Cerrar Sesion</span>
         </a>
       </div>
     </aside>
@@ -160,7 +128,7 @@
           <span class="badge badge-info">📅 {{ active_year.name }}</span>
           {% endif %}
           {% if active_year and current_period %}
-          <span style="color:var(--ink-lighter); font-size:0.8rem;" aria-hidden="true">&bull;</span>
+          <span style="color: var(--neutral-400); font-size: 0.8rem;" aria-hidden="true">&bull;</span>
           {% endif %}
           {% if current_period %}
           <span class="badge badge-outline">{{ current_period.name }}</span>

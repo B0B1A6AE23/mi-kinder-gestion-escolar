@@ -1,28 +1,23 @@
 /* ==========================================================
-   Theme — Layout, Sidebar, Topbar, Login, Responsive
+   Theme v2.0 — Layout, Sidebar, Topbar, Login, Responsive
    Colegio CAPI
    ========================================================== */
 
-/* ─── App Layout ─── */
+/* --- App Layout --- */
 .app-layout {
   display: flex;
   min-height: 100vh;
   background: var(--bg);
 }
 
-/* ══════════════════════════════════════════════════════════
+/* ================================================================
    SIDEBAR
-   ══════════════════════════════════════════════════════════ */
+   ================================================================ */
 .sidebar {
   position: fixed;
   top: 0; left: 0; bottom: 0;
   width: var(--sidebar-width);
-  background: linear-gradient(180deg,
-    #112840 0%,
-    #1A3A5C 35%,
-    #163350 70%,
-    #0F2035 100%
-  );
+  background: var(--gradient-sidebar);
   color: var(--sidebar-text);
   display: flex;
   flex-direction: column;
@@ -30,16 +25,18 @@
   overflow-y: auto;
   overflow-x: hidden;
   transition: transform var(--dur-slow) var(--ease-out);
-  /* Subtle noise texture via box-shadow trick */
-  box-shadow: 4px 0 24px rgba(9, 18, 30, 0.18);
+  box-shadow: 4px 0 32px rgba(10, 20, 37, 0.25);
 }
 
-/* Custom scrollbar in sidebar */
-.sidebar::-webkit-scrollbar { width: 4px; }
+/* Scrollbar */
+.sidebar::-webkit-scrollbar { width: 3px; }
 .sidebar::-webkit-scrollbar-track { background: transparent; }
-.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 99px; }
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 99px;
+}
 
-/* ─── Sidebar Header ─── */
+/* --- Sidebar Header --- */
 .sidebar-header {
   display: flex;
   align-items: center;
@@ -54,25 +51,44 @@
   position: absolute;
   bottom: 0; left: var(--sp-4); right: var(--sp-4);
   height: 1px;
-  background: linear-gradient(90deg, rgba(255,213,79,0.4) 0%, rgba(255,213,79,0.1) 60%, transparent 100%);
+  background: linear-gradient(90deg,
+    rgba(67, 97, 238, 0.4) 0%,
+    rgba(67, 97, 238, 0.1) 60%,
+    transparent 100%);
 }
 
-.sidebar-logo-mark {
-  width: 38px; height: 38px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--sunshine) 0%, #F9A825 100%);
-  display: flex; align-items: center; justify-content: center;
+/* CAPI Blocks Logo */
+.capi-blocks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(255, 213, 79, 0.35);
+  transition: transform var(--dur-normal) var(--ease-spring);
 }
 
-.sidebar-logo-mark span {
+.capi-blocks:hover {
+  transform: rotate(-5deg) scale(1.08);
+}
+
+.cb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 0.95rem;
-  color: var(--ocean-dark);
-  letter-spacing: -0.5px;
+  font-size: 0.6rem;
+  color: white;
+  border-radius: 5px;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
+
+.cb-c { background: var(--capi-rosa); }
+.cb-a { background: var(--capi-rojo); }
+.cb-p { background: var(--capi-verde); }
+.cb-i { background: var(--capi-azul); }
 
 .sidebar-title {
   font-family: var(--font-heading);
@@ -85,28 +101,38 @@
 
 .sidebar-subtitle {
   font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--sidebar-text-muted);
   margin: 2px 0 0;
   font-style: italic;
   letter-spacing: 0.02em;
 }
 
-/* ─── Navigation ─── */
+/* --- Navigation --- */
 .sidebar-nav {
   flex: 1;
-  padding: var(--sp-3) var(--sp-3);
+  padding: var(--sp-3);
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .sidebar-nav::-webkit-scrollbar { display: none; }
 
+.nav-section-label {
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--sidebar-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: var(--sp-4) var(--sp-3) var(--sp-2);
+}
+
 .nav-item {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--radius-md);
+  padding: 9px var(--sp-3);
+  border-radius: var(--radius-sm);
   color: var(--sidebar-text);
   font-family: var(--font-body);
   font-size: var(--text-sm);
@@ -130,21 +156,29 @@
 
 .nav-item:hover {
   color: #FFFFFF;
+  transform: translateX(2px);
 }
 
 .nav-item:hover::before {
   opacity: 1;
 }
 
-.nav-item:hover {
-  transform: translateX(2px);
+/* Active state: indigo accent bar + subtle bg */
+.nav-item.active {
+  background: var(--sidebar-active);
+  color: var(--sidebar-active-text);
+  font-weight: 600;
 }
 
-.nav-item.active {
-  background: rgba(255, 255, 255, 0.11);
-  color: #FFFFFF;
-  font-weight: 600;
-  box-shadow: inset 3px 0 0 var(--sunshine);
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  background: var(--primary);
+  border-radius: 0 4px 4px 0;
 }
 
 .nav-item.active::before { opacity: 0; }
@@ -157,6 +191,11 @@
   position: relative;
   z-index: 1;
   line-height: 1;
+  transition: transform var(--dur-fast) var(--ease-bounce);
+}
+
+.nav-item:hover .nav-icon {
+  transform: scale(1.12);
 }
 
 .nav-label {
@@ -169,30 +208,31 @@
 
 .nav-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
   margin: var(--sp-2) var(--sp-2);
 }
 
-/* ─── Sidebar Footer ─── */
+/* --- Sidebar Footer --- */
 .sidebar-footer {
   padding: var(--sp-3);
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  background: rgba(0, 0, 0, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
 }
 
 .nav-logout {
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.40);
 }
 
 .nav-logout:hover {
   color: #FF8A80;
-  background: rgba(255, 87, 68, 0.08);
+  background: rgba(255, 87, 68, 0.10);
 }
 
-/* ══════════════════════════════════════════════════════════
+
+/* ================================================================
    MAIN CONTENT
-   ══════════════════════════════════════════════════════════ */
+   ================================================================ */
 .main-content {
   flex: 1;
   min-width: 0;
@@ -204,21 +244,22 @@
   overflow-x: hidden;
 }
 
-/* ─── Topbar ─── */
+/* --- Topbar --- */
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--sp-6);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
   min-height: 56px;
-  box-shadow: 0 1px 0 var(--border), 0 4px 12px rgba(26, 58, 92, 0.04);
+  box-shadow: 0 1px 0 var(--border),
+              0 4px 20px rgba(15, 23, 42, 0.03);
 }
 
 .topbar-info {
@@ -239,18 +280,23 @@
 .user-avatar {
   width: 32px; height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+  background: var(--gradient-primary);
   color: white;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 0.8rem;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(26, 58, 92, 0.2);
+  box-shadow: 0 2px 8px var(--primary-ring);
+  transition: transform var(--dur-fast) var(--ease-spring);
+}
+
+.user-avatar:hover {
+  transform: scale(1.08);
 }
 
 .topbar-role {
-  background: linear-gradient(135deg, var(--ocean) 0%, var(--ocean-mid) 100%);
+  background: var(--gradient-primary);
   color: white;
   padding: 3px 10px;
   border-radius: var(--radius-full);
@@ -268,7 +314,7 @@
   font-size: var(--text-sm);
 }
 
-/* ─── Sidebar Toggle (mobile) ─── */
+/* --- Sidebar Toggle (mobile) --- */
 .sidebar-toggle {
   display: none;
   flex-direction: column;
@@ -292,19 +338,19 @@
   transition: all var(--dur-fast);
 }
 
-/* ─── Flash Messages ─── */
+/* --- Flash Messages --- */
 .flash-messages {
   padding: var(--sp-3) var(--sp-6) 0;
 }
 
-/* ─── Page Content ─── */
+/* --- Page Content --- */
 .page-content {
   flex: 1;
   padding: var(--sp-6);
   animation: fadeIn 350ms var(--ease-out) both;
 }
 
-/* ─── Page Header ─── */
+/* --- Page Header --- */
 .page-header {
   display: flex;
   align-items: flex-start;
@@ -338,16 +384,18 @@
   flex-wrap: wrap;
 }
 
-/* ─── Mobile Overlay ─── */
+
+/* --- Mobile Overlay --- */
 .sidebar-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(9, 18, 30, 0.55);
+  background: rgba(10, 20, 37, 0.60);
   z-index: calc(var(--z-sidebar) - 1);
   opacity: 0;
   transition: opacity var(--dur-normal) var(--ease-out);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .sidebar-overlay.active {
@@ -355,9 +403,10 @@
   opacity: 1;
 }
 
-/* ══════════════════════════════════════════════════════════
+
+/* ================================================================
    LOGIN PAGE
-   ══════════════════════════════════════════════════════════ */
+   ================================================================ */
 .login-wrapper {
   min-height: 100vh;
   display: flex;
@@ -369,25 +418,32 @@
   overflow: hidden;
 }
 
-/* Decorative circles */
+/* Animated floating circles */
 .login-wrapper::before {
   content: '';
   position: absolute;
-  width: 700px; height: 700px;
+  width: 600px; height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 213, 79, 0.08) 0%, transparent 70%);
-  top: -250px; right: -200px;
+  background: radial-gradient(circle,
+    rgba(67, 97, 238, 0.10) 0%,
+    transparent 70%);
+  top: -200px; right: -150px;
   pointer-events: none;
+  animation: float 8s ease-in-out infinite;
 }
 
 .login-wrapper::after {
   content: '';
   position: absolute;
-  width: 500px; height: 500px;
+  width: 450px; height: 450px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 112, 67, 0.10) 0%, transparent 70%);
-  bottom: -150px; left: -150px;
+  background: radial-gradient(circle,
+    rgba(233, 30, 140, 0.08) 0%,
+    transparent 70%);
+  bottom: -120px; left: -120px;
   pointer-events: none;
+  animation: float 10s ease-in-out infinite;
+  animation-delay: -3s;
 }
 
 .login-card {
@@ -399,24 +455,25 @@
   box-shadow: var(--shadow-2xl);
   position: relative;
   z-index: 1;
-  border-top: 4px solid var(--sunshine);
   animation: scaleIn var(--dur-enter) var(--ease-out) both;
+  overflow: hidden;
 }
 
-/* Subtle inner shine at top */
+/* CAPI gradient top bar on login card */
 .login-card::before {
   content: '';
   position: absolute;
-  top: 0; left: var(--sp-8); right: var(--sp-8);
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,213,79,0.6), transparent);
-  pointer-events: none;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--gradient-capi);
+  background-size: 200% 100%;
+  animation: gradient-shift 6s ease-in-out infinite;
 }
 
-/* ══════════════════════════════════════════════════════════
-   RESPONSIVE
-   ══════════════════════════════════════════════════════════ */
 
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
 /* Tablet landscape */
 @media (max-width: 1200px) {
   :root { --sidebar-width: 240px; }
@@ -428,31 +485,12 @@
     transform: translateX(-100%);
     width: var(--sidebar-width-mobile);
   }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .main-content {
-    margin-left: 0;
-  }
-
-  .sidebar-toggle {
-    display: flex;
-  }
-
-  .page-content {
-    padding: var(--sp-4);
-  }
-
-  .topbar {
-    padding: 0 var(--sp-4);
-  }
-
-  .flash-messages {
-    padding: var(--sp-3) var(--sp-4) 0;
-  }
-
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0; }
+  .sidebar-toggle { display: flex; }
+  .page-content { padding: var(--sp-4); }
+  .topbar { padding: 0 var(--sp-4); }
+  .flash-messages { padding: var(--sp-3) var(--sp-4) 0; }
   .page-header {
     flex-direction: column;
     gap: var(--sp-3);
@@ -461,47 +499,36 @@
 
 /* Mobile landscape */
 @media (max-width: 768px) {
-  .page-title {
-    font-size: var(--text-xl);
-  }
+  .page-title { font-size: var(--text-xl); }
 }
 
 /* Mobile portrait */
 @media (max-width: 640px) {
-  .page-content {
-    padding: var(--sp-3);
-  }
-
-  .page-title {
-    font-size: var(--text-lg);
-  }
+  .page-content { padding: var(--sp-3); }
+  .page-title { font-size: var(--text-lg); }
 
   .form-row {
     flex-direction: column;
     gap: 0;
   }
 
-  /* Filter forms: wrap instead of overflow on mobile */
+  /* Filter forms: wrap instead of overflow */
   .filter-form .form-row {
     flex-direction: row;
     flex-wrap: wrap;
     gap: var(--sp-2);
   }
-
   .filter-form .form-row .form-group {
     flex: 1 1 140px;
     min-width: 0;
   }
 
-  .topbar-user {
-    display: none;
-  }
+  .topbar-user { display: none; }
 
   .header-actions {
     width: 100%;
     flex-wrap: wrap;
   }
-
   .header-actions .btn {
     flex: 1 1 auto;
     min-width: 120px;
@@ -515,18 +542,7 @@
   }
 }
 
-/* Small mobile */
-@media (max-width: 380px) {
-  .topbar {
-    padding: 0 var(--sp-3);
-  }
-
-  .page-content {
-    padding: var(--sp-2);
-  }
-}
-
-/* Topbar period badge truncation on mobile */
+/* Topbar badge truncation on mobile */
 @media (max-width: 640px) {
   .topbar-info .badge {
     max-width: 130px;
@@ -537,9 +553,16 @@
   }
 }
 
-/* ══════════════════════════════════════════════════════════
+/* Small mobile */
+@media (max-width: 380px) {
+  .topbar { padding: 0 var(--sp-3); }
+  .page-content { padding: var(--sp-2); }
+}
+
+
+/* ================================================================
    PRINT
-   ══════════════════════════════════════════════════════════ */
+   ================================================================ */
 @media print {
   .sidebar, .topbar, .sidebar-toggle,
   .sidebar-overlay, .flash-messages,

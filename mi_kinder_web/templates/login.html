@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1A3A5C">
+  <meta name="theme-color" content="#142742">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Iniciar Sesión — Colegio CAPI</title>
+  <title>Iniciar Sesion — Colegio CAPI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
@@ -13,105 +13,135 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
   <style>
-    /* Login brand block */
+    /* Login-specific styles */
     .login-brand {
       display: flex;
       align-items: center;
       gap: 1rem;
       margin-bottom: 1.25rem;
     }
-    .login-logo-mark {
+
+    .login-capi-blocks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
       width: 52px;
       height: 52px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #FFD54F 0%, #F9A825 100%);
+      flex-shrink: 0;
+    }
+
+    .login-cb {
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      box-shadow: 0 4px 16px rgba(255, 213, 79, 0.45);
-    }
-    .login-logo-mark span {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 800;
-      font-size: 1.3rem;
-      color: #0F2035;
-      letter-spacing: -1px;
+      font-size: 0.85rem;
+      color: white;
+      border-radius: 7px;
+      line-height: 1;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
+    .login-brand:hover .login-cb { transform: rotate(-3deg) scale(1.05); }
+    .login-brand:hover .login-cb:nth-child(2) { transform: rotate(3deg) scale(1.05); }
+    .login-brand:hover .login-cb:nth-child(3) { transform: rotate(3deg) scale(1.05); }
+    .login-brand:hover .login-cb:nth-child(4) { transform: rotate(-3deg) scale(1.05); }
+
+    .lcb-c { background: #E91E8C; }
+    .lcb-a { background: #E53935; }
+    .lcb-p { background: #43A047; }
+    .lcb-i { background: #00ACC1; }
+
     .login-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 1.5rem;
       font-weight: 800;
-      color: #1A3A5C;
+      color: var(--capi-navy);
       margin: 0 0 2px;
       line-height: 1.15;
       letter-spacing: -0.03em;
     }
+
     .login-institution {
       font-family: 'DM Sans', sans-serif;
       font-size: 0.72rem;
-      color: #5A7A9E;
+      color: var(--neutral-600);
       line-height: 1.3;
       margin: 0;
     }
+
     .login-location {
       font-family: 'DM Sans', sans-serif;
       font-size: 0.68rem;
-      color: #A3BCE0;
+      color: var(--neutral-400);
       margin: 2px 0 0;
       font-style: italic;
     }
+
     .login-divider {
       height: 1px;
-      background: linear-gradient(90deg, transparent, #E2EAF2 30%, #E2EAF2 70%, transparent);
+      background: linear-gradient(90deg,
+        transparent,
+        var(--border) 30%,
+        var(--border) 70%,
+        transparent);
       margin: 1.25rem 0;
     }
+
     .login-tagline {
       text-align: center;
       font-family: 'DM Sans', sans-serif;
       font-style: italic;
-      color: #2D5F8A;
+      color: var(--primary);
       font-size: 0.875rem;
       font-weight: 500;
       margin-bottom: 1.75rem;
       opacity: 0.85;
     }
+
     .login-form .form-label {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 600;
       font-size: 0.8125rem;
-      color: #3D5C7E;
+      color: var(--neutral-700);
       margin-bottom: 6px;
     }
+
     .login-remember {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 1.5rem;
     }
+
     .login-remember input[type="checkbox"] {
       width: 16px;
       height: 16px;
-      accent-color: #1A3A5C;
+      accent-color: var(--primary);
       cursor: pointer;
     }
+
     .login-remember label {
       font-family: 'DM Sans', sans-serif;
       font-size: 0.875rem;
-      color: #5A7A9E;
+      color: var(--neutral-600);
       cursor: pointer;
       margin: 0;
     }
+
     .login-submit {
       font-size: 0.9375rem;
       padding: 14px;
       letter-spacing: -0.01em;
     }
+
     .login-footer-text {
       text-align: center;
       font-family: 'DM Sans', sans-serif;
       font-size: 0.68rem;
-      color: #C8D9EF;
+      color: var(--neutral-400);
       margin-top: 1.75rem;
       margin-bottom: 0;
     }
@@ -121,19 +151,24 @@
   <div class="login-wrapper">
     <div class="login-card">
 
-      <!-- Branding -->
+      <!-- Branding with CAPI blocks -->
       <div class="login-brand">
-        <div class="login-logo-mark"><span>CA</span></div>
+        <div class="login-capi-blocks">
+          <span class="login-cb lcb-c">C</span>
+          <span class="login-cb lcb-a">A</span>
+          <span class="login-cb lcb-p">P</span>
+          <span class="login-cb lcb-i">I</span>
+        </div>
         <div>
           <h1 class="login-title">Colegio CAPI</h1>
-          <p class="login-institution">Centro de Atención Psicopedagógica Infantil</p>
-          <p class="login-location">Matías Romero, Oaxaca</p>
+          <p class="login-institution">Centro de Atencion Psicopedagogica Infantil</p>
+          <p class="login-location">Matias Romero, Oaxaca</p>
         </div>
       </div>
 
       <div class="login-divider"></div>
 
-      <p class="login-tagline">"Educación con valores"</p>
+      <p class="login-tagline">"Educacion con valores"</p>
 
       <!-- Flash messages -->
       {% with messages = get_flashed_messages(with_categories=true) %}
@@ -158,21 +193,21 @@
                  required autofocus autocomplete="username">
         </div>
         <div class="form-group">
-          <label for="password" class="form-label">Contraseña</label>
+          <label for="password" class="form-label">Contrasena</label>
           <input type="password" id="password" name="password" class="form-control"
                  placeholder="••••••••"
                  required autocomplete="current-password">
         </div>
         <div class="login-remember">
           <input type="checkbox" id="remember_me" name="remember_me">
-          <label for="remember_me">Mantener sesión activa</label>
+          <label for="remember_me">Mantener sesion activa</label>
         </div>
         <button type="submit" class="btn btn-primary btn-block login-submit">
-          Iniciar Sesión
+          Iniciar Sesion
         </button>
       </form>
 
-      <p class="login-footer-text">Sistema de Gestión Escolar · v1.0</p>
+      <p class="login-footer-text">Sistema de Gestion Escolar · v2.0</p>
     </div>
   </div>
   <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>

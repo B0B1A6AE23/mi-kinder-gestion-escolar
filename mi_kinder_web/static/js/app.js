@@ -1,6 +1,15 @@
 /**
- * Mi Kinder Web - App JavaScript
- * Colegio CAPI - Centro de Atencion Psicopedagogica Infantil
+ * Mi Kinder Web v2.0 — App JavaScript
+ * Colegio CAPI — Centro de Atencion Psicopedagogica Infantil
+ *
+ * Features:
+ *  - Sidebar toggle (mobile)
+ *  - Auto-dismiss flash messages
+ *  - Scroll-triggered animations (IntersectionObserver)
+ *  - Stat counter animation
+ *  - Smooth page transitions
+ *  - Table row click-to-navigate
+ *  - Keyboard shortcuts
  */
 
 (function() {
@@ -41,19 +50,14 @@
 
   // Close sidebar on ESC
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      closeSidebar();
-    }
+    if (e.key === 'Escape') closeSidebar();
   });
 
   // Close sidebar on nav link click (mobile)
   if (sidebar) {
-    var navLinks = sidebar.querySelectorAll('.nav-item');
-    navLinks.forEach(function(link) {
+    sidebar.querySelectorAll('.nav-item').forEach(function(link) {
       link.addEventListener('click', function() {
-        if (window.innerWidth <= 1024) {
-          closeSidebar();
-        }
+        if (window.innerWidth <= 1024) closeSidebar();
       });
     });
   }
@@ -61,19 +65,139 @@
   // ==========================================================
   // Auto-dismiss flash messages
   // ==========================================================
-  var alerts = document.querySelectorAll('.alert');
-  alerts.forEach(function(alert) {
+  document.querySelectorAll('.alert').forEach(function(alert) {
     setTimeout(function() {
       alert.style.opacity = '0';
       alert.style.transform = 'translateY(-10px)';
       alert.style.transition = 'opacity 0.3s, transform 0.3s';
       setTimeout(function() {
-        if (alert.parentElement) {
-          alert.remove();
-        }
+        if (alert.parentElement) alert.remove();
       }, 300);
     }, 6000);
   });
+
+  // ==========================================================
+  // Scroll-triggered reveal animations
+  // ==========================================================
+  if ('IntersectionObserver' in window) {
+    // Animate cards, stat-cards, and other elements on scroll
+    var revealElements = document.querySelectorAll(
+      '.card, .stat-card, .quick-action-btn, .birthday-item, .report-group-item'
+    );
+
+    var staggerIndex = 0;
+
+    var revealObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var el = entry.target;
+          // Add staggered delay for grouped items
+          var delay = (staggerIndex % 6) * 60;
+          staggerIndex++;
+
+          el.style.transitionDelay = delay + 'ms';
+          el.classList.add('is-revealed');
+          revealObserver.unobserve(el);
+        }
+      });
+    }, {
+      threshold: 0.05,
+      rootMargin: '0px 0px -30px 0px'
+    });
+
+    revealElements.forEach(function(el) {
+      // Set initial state
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(16px)';
+      el.style.transition = 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+      revealObserver.observe(el);
+    });
+
+    // CSS class for revealed state
+    var style = document.createElement('style');
+    style.textContent = '.is-revealed { opacity: 1 !important; transform: translateY(0) !important; }';
+    document.head.appendChild(style);
+  }
+
+  // ==========================================================
+  // Stat counter animation
+  // ==========================================================
+  function animateCounter(el, target, duration) {
+    if (isNaN(target)) return;
+
+    var isPercent = el.textContent.includes('%');
+    var isDecimal = target % 1 !== 0;
+    var start = 0;
+    var startTime = null;
+
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      var progress = Math.min((timestamp - startTime) / duration, 1);
+      // Ease out cubic
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var current = start + (target - start) * eased;
+
+      if (isDecimal) {
+        el.textContent = current.toFixed(1) + (isPercent ? '%' : '');
+      } else {
+        el.textContent = Math.floor(current) + (isPercent ? '%' : '');
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = target + (isPercent ? '%' : '');
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  if ('IntersectionObserver' in window) {
+    var statValues = document.querySelectorAll('.stat-value');
+    var counterObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var el = entry.target;
+          var text = el.textContent.trim();
+          var numericValue = parseFloat(text.replace('%', ''));
+          if (!isNaN(numericValue)) {
+            animateCounter(el, numericValue, 800);
+          }
+          counterObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    statValues.forEach(function(el) {
+      counterObserver.observe(el);
+    });
+  }
+
+  // ==========================================================
+  // Progress bar animation
+  // ==========================================================
+  if ('IntersectionObserver' in window) {
+    var progressBars = document.querySelectorAll('.progress-bar');
+    var progressObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var bar = entry.target;
+          var width = bar.style.width;
+          bar.style.width = '0';
+          requestAnimationFrame(function() {
+            bar.style.transition = 'width 1s cubic-bezier(0.16, 1, 0.3, 1)';
+            bar.style.width = width;
+          });
+          progressObserver.unobserve(bar);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    progressBars.forEach(function(bar) {
+      progressObserver.observe(bar);
+    });
+  }
 
   // ==========================================================
   // Confirm dialogs for dangerous actions
@@ -97,14 +221,13 @@
   }
 
   // ==========================================================
-  // Smooth transitions for page loads
+  // Smooth page transitions
   // ==========================================================
   document.body.style.opacity = '0';
-  document.body.style.transition = 'opacity 0.2s ease-out';
+  document.body.style.transition = 'opacity 0.25s ease-out';
   window.addEventListener('load', function() {
     document.body.style.opacity = '1';
   });
-  // Fallback in case load already fired
   if (document.readyState === 'complete') {
     document.body.style.opacity = '1';
   }
@@ -117,7 +240,6 @@
     if (link) {
       row.style.cursor = 'pointer';
       row.addEventListener('click', function(e) {
-        // Don't navigate if clicking a button or link
         if (e.target.closest('a, button, input, select')) return;
         window.location.href = link.href;
       });
@@ -125,7 +247,7 @@
   });
 
   // ==========================================================
-  // Keyboard shortcut: focus search
+  // Keyboard shortcut: focus search (Ctrl+K)
   // ==========================================================
   document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -137,5 +259,13 @@
       }
     }
   });
+
+  // ==========================================================
+  // Active nav indicator animation
+  // ==========================================================
+  var activeNav = document.querySelector('.nav-item.active');
+  if (activeNav) {
+    activeNav.style.animation = 'slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both';
+  }
 
 })();
