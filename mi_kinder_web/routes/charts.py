@@ -48,6 +48,7 @@ def index():
 @charts_bp.route("/charts/group-averages")
 @login_required
 def group_averages():
+    """Muestra cuántos alumnos están en cada nivel por área (conteos, no promedios)."""
     db = get_db()
     group_id = request.args.get("group_id", type=int)
     period_id = request.args.get("period_id", type=int)
@@ -55,44 +56,80 @@ def group_averages():
     if not group_id or not period_id:
         return jsonify({"error": "Faltan parametros"}), 400
 
-    avgs = db.execute(
-        """SELECT ea.name as area_name,
-                  AVG(e.numeric_value) as avg_value,
-                  COUNT(e.id) as eval_count
-           FROM evaluation_areas ea
-           LEFT JOIN evaluations e
-             ON e.evaluation_area_id = ea.id
-            AND e.period_id = ?
-            AND e.student_id IN (
-                SELECT id FROM students WHERE group_id = ? AND is_active = 1
-            )
-           WHERE ea.school_year_id = (SELECT school_year_id FROM periods WHERE id = ?)
-             AND ea.is_active = 1
-           GROUP BY ea.id ORDER BY ea.sort_order""",
-        (period_id, group_id, period_id),
+    # Escala activa
+    scale = db.execute(
+        "SELECT * FROM grading_scales WHERE is_default = 1"
+    ).fetchone()
+    if not scale:
+        return jsonify({"image": None, "message": "Sin escala de calificación configurada"})
+
+    levels = db.execute(
+        "SELECT * FROM grading_scale_levels WHERE grading_scale_id = ? ORDER BY sort_order",
+        (scale["id"],),
     ).fetchall()
 
-    if not avgs:
-        return jsonify({"image": None, "message": "Sin datos"})
+    # Áreas activas del ciclo de ese periodo
+    areas = db.execute(
+        """SELECT * FROM evaluation_areas
+           WHERE school_year_id = (SELECT school_year_id FROM periods WHERE id = ?)
+             AND is_active = 1
+           ORDER BY sort_order""",
+        (period_id,),
+    ).fetchall()
 
-    area_names = [a["area_name"] for a in avgs]
-    values = [a["avg_value"] or 0 for a in avgs]
+    if not areas or not levels:
+        return jsonify({"image": None, "message": "Sin áreas o escala configurada"})
+
+    # Conteo de alumnos por (área, nivel) solo del grupo seleccionado
+    rows = db.execute(
+        """SELECT e.evaluation_area_id, e.grade_level_id, COUNT(*) as cnt
+           FROM evaluations e
+           WHERE e.period_id = ?
+             AND e.student_id IN (
+                 SELECT id FROM students WHERE group_id = ? AND is_active = 1
+             )
+           GROUP BY e.evaluation_area_id, e.grade_level_id""",
+        (period_id, group_id),
+    ).fetchall()
+
+    count_map = {(r["evaluation_area_id"], r["grade_level_id"]): r["cnt"] for r in rows}
+
+    total_students = db.execute(
+        "SELECT COUNT(*) as c FROM students WHERE group_id = ? AND is_active = 1",
+        (group_id,),
+    ).fetchone()["c"]
+
+    area_names = [a["name"] for a in areas]
+    x = np.arange(len(area_names))
+    n = len(levels)
+    width = 0.65 / n  # ancho total de grupo / número de niveles
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    colors = ["#FFB74D", "#4FC3F7", "#81C784", "#E57373", "#BA68C8", "#FFD54F"]
-    bars = ax.bar(area_names, values, color=[colors[i % len(colors)] for i in range(len(area_names))])
 
-    ax.set_ylabel("Promedio")
-    ax.set_title("Promedios por Área")
-    ax.set_ylim(0, 3.5)
-    ax.tick_params(axis="x", rotation=30)
+    for i, level in enumerate(levels):
+        counts = [count_map.get((a["id"], level["id"]), 0) for a in areas]
+        offset = (i - n / 2 + 0.5) * width
+        bars = ax.bar(x + offset, counts, width,
+                      label=level["label"],
+                      color=level["color"] or "#888888")
+        for bar, val in zip(bars, counts):
+            if val > 0:
+                ax.text(
+                    bar.get_x() + bar.get_width() / 2,
+                    bar.get_height() + 0.03,
+                    str(val),
+                    ha="center", va="bottom", fontsize=9, fontweight="bold"
+                )
 
-    for bar, val in zip(bars, values):
-        if val > 0:
-            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.05,
-                    f"{val:.1f}", ha="center", va="bottom", fontweight="bold", fontsize=10)
-
+    ax.set_xticks(x)
+    ax.set_xticklabels(area_names, rotation=30, ha="right")
+    ax.set_ylabel("Número de alumnos")
+    ax.set_title(f"Alumnos por Nivel y Área  ({total_students} alumnos evaluados)")
+    ax.yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+    ax.set_ylim(0, max(total_students + 1, 3))
+    ax.legend(loc="upper right", fontsize=9)
     fig.tight_layout()
+
     img = fig_to_base64(fig)
     return jsonify({"image": img})
 
