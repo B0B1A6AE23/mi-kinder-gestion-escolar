@@ -13,7 +13,6 @@ dashboard_bp = Blueprint("dashboard", __name__)
 def index():
     db = get_db()
     today = date.today().isoformat()
-    thirty_days_ago = (date.today() - timedelta(days=30)).isoformat()
 
     # Active school year
     active_year = db.execute(
@@ -39,16 +38,37 @@ def index():
         "SELECT COUNT(*) c FROM users WHERE role = 'maestra' AND is_active = 1"
     ).fetchone()["c"]
 
-    # Attendance rate last 30 days
+    # Attendance rate — use the current active period if today falls within one,
+    # otherwise fall back to the full active school year.
+    # 'present' and 'late' (retardo) both count as attending; absences do not.
+    active_period = db.execute(
+        """SELECT * FROM periods
+           WHERE school_year_id = ? AND start_date <= ? AND end_date >= ?
+           ORDER BY sort_order LIMIT 1""",
+        (year_id, today, today),
+    ).fetchone()
+
+    if active_period:
+        att_start = active_period["start_date"]
+        att_end   = active_period["end_date"]
+        att_label = active_period["name"]
+    elif active_year:
+        att_start = active_year["start_date"]
+        att_end   = active_year["end_date"]
+        att_label = "Ciclo Escolar"
+    else:
+        att_start = att_end = today
+        att_label = "Hoy"
+
     att_row = db.execute(
         """SELECT
-             COUNT(CASE WHEN ar.status = 'present' THEN 1 END) * 100.0
+             COUNT(CASE WHEN ar.status IN ('present', 'late') THEN 1 END) * 100.0
              / NULLIF(COUNT(*), 0) as rate
            FROM attendance_records ar
            JOIN students s ON s.id = ar.student_id
            JOIN groups_ g ON g.id = s.group_id
            WHERE g.school_year_id = ? AND ar.date BETWEEN ? AND ?""",
-        (year_id, thirty_days_ago, today),
+        (year_id, att_start, att_end),
     ).fetchone()
     attendance_rate = round(att_row["rate"], 1) if att_row and att_row["rate"] else 0
 
@@ -134,4 +154,5 @@ def index():
         absences=absences,
         birthdays=birthdays,
         today_iso=today,
+        att_label=att_label,
     )
