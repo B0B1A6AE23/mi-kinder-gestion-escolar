@@ -83,7 +83,7 @@
             {% for s in students %}
             <tr>
               <td class="student-name-cell">
-                <div style="display:flex; align-items:center; gap:0.6rem;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
                   {% set sav = photo_url(s.photo_path) if s.photo_path else None %}
                   {% if sav %}
                   <img src="{{ sav }}" alt=""
@@ -95,7 +95,7 @@
                     {{ s.first_name[:1] }}
                   </div>
                   {% endif %}
-                  <div>
+                  <div style="display:flex; align-items:center; gap:0.3rem; flex-wrap:wrap;">
                     <strong>{{ s.last_name }} {{ s.second_last_name or '' }}, {{ s.first_name }}</strong>
                     {{ student_badges(s) }}
                   </div>
