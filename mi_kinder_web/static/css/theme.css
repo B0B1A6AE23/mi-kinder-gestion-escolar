@@ -195,11 +195,13 @@
    ══════════════════════════════════════════════════════════ */
 .main-content {
   flex: 1;
+  min-width: 0;
   margin-left: var(--sidebar-width);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: var(--bg);
+  overflow-x: hidden;
 }
 
 /* ─── Topbar ─── */
@@ -223,6 +225,8 @@
   display: flex;
   align-items: center;
   gap: var(--sp-2);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .topbar-user {
@@ -477,16 +481,30 @@
     gap: 0;
   }
 
+  /* Filter forms: wrap instead of overflow on mobile */
+  .filter-form .form-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+
+  .filter-form .form-row .form-group {
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+
   .topbar-user {
     display: none;
   }
 
   .header-actions {
     width: 100%;
+    flex-wrap: wrap;
   }
 
   .header-actions .btn {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 120px;
     text-align: center;
     justify-content: center;
   }
@@ -505,6 +523,17 @@
 
   .page-content {
     padding: var(--sp-2);
+  }
+}
+
+/* Topbar period badge truncation on mobile */
+@media (max-width: 640px) {
+  .topbar-info .badge {
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
   }
 }
 

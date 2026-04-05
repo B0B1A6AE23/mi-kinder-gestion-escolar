@@ -116,7 +116,9 @@ def attendance_excel():
         return redirect(url_for("attendance.report"))
 
     group = db.execute("SELECT * FROM groups_ WHERE id = ?", (group_id,)).fetchone()
-    group_name = group["name"] if group else "grupo"
+    import re
+    raw_name = group["name"] if group else "grupo"
+    group_name = re.sub(r'_+', '_', re.sub(r'[\\/:*?"<>|\s]+', '_', raw_name)).strip('_')
 
     students = db.execute(
         """SELECT s.id, s.first_name || ' ' || s.last_name as full_name
