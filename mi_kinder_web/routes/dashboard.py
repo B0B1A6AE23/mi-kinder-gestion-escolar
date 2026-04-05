@@ -88,25 +88,44 @@ def index():
         (seven_days_ago, today, year_id),
     ).fetchall()
 
-    # Upcoming birthdays (next 30 days)
-    birthdays = db.execute(
-        """SELECT s.first_name || ' ' || s.last_name as name,
-                  s.birth_date, g.name as group_name
-           FROM students s
-           JOIN groups_ g ON g.id = s.group_id
-           WHERE g.school_year_id = ? AND s.is_active = 1
-             AND s.birth_date IS NOT NULL
-           ORDER BY
-             CASE
-               WHEN CAST(substr(s.birth_date,6,2) AS INT) * 100 + CAST(substr(s.birth_date,9,2) AS INT)
-                    >= CAST(substr(?,6,2) AS INT) * 100 + CAST(substr(?,9,2) AS INT)
-               THEN 0 ELSE 1
-             END,
-             CAST(substr(s.birth_date,6,2) AS INT),
-             CAST(substr(s.birth_date,9,2) AS INT)
-           LIMIT 5""",
-        (year_id, today, today),
-    ).fetchall()
+    # Upcoming birthdays — only next 30 days, never past birthdays
+    next_30 = (date.today() + timedelta(days=30))
+    today_mmdd = date.today().strftime('%m-%d')
+    next_mmdd  = next_30.strftime('%m-%d')
+    no_rollover = today_mmdd <= next_mmdd
+
+    if no_rollover:
+        birthdays = db.execute(
+            """SELECT s.id, s.first_name, s.last_name, s.second_last_name,
+                      s.photo_path, s.discapacidad, s.aptitud_sobresaliente,
+                      s.condicion_adicional, s.birth_date, g.name as group_name
+               FROM students s
+               JOIN groups_ g ON g.id = s.group_id
+               WHERE g.school_year_id = ? AND s.is_active = 1
+                 AND s.birth_date IS NOT NULL
+                 AND strftime('%m-%d', s.birth_date) BETWEEN ? AND ?
+               ORDER BY strftime('%m-%d', s.birth_date)
+               LIMIT 5""",
+            (year_id, today_mmdd, next_mmdd),
+        ).fetchall()
+    else:
+        # Year-end rollover (e.g., Dec 20 → Jan 19)
+        birthdays = db.execute(
+            """SELECT s.id, s.first_name, s.last_name, s.second_last_name,
+                      s.photo_path, s.discapacidad, s.aptitud_sobresaliente,
+                      s.condicion_adicional, s.birth_date, g.name as group_name
+               FROM students s
+               JOIN groups_ g ON g.id = s.group_id
+               WHERE g.school_year_id = ? AND s.is_active = 1
+                 AND s.birth_date IS NOT NULL
+                 AND (strftime('%m-%d', s.birth_date) >= ?
+                      OR  strftime('%m-%d', s.birth_date) <= ?)
+               ORDER BY
+                 CASE WHEN strftime('%m-%d', s.birth_date) >= ? THEN 0 ELSE 1 END,
+                 strftime('%m-%d', s.birth_date)
+               LIMIT 5""",
+            (year_id, today_mmdd, next_mmdd, today_mmdd),
+        ).fetchall()
 
     return render_template(
         "dashboard.html",

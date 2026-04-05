@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import student_badges %}
 {% block title %}Dashboard - {{ app_name }}{% endblock %}
 
 {% block content %}
@@ -158,9 +159,22 @@
     <div class="birthday-list">
       {% for b in birthdays %}
       <div class="birthday-item">
-        <span class="birthday-icon">🎈</span>
+        {% set bav = photo_url(b.photo_path) if b.photo_path else None %}
+        {% if bav %}
+        <img src="{{ bav }}" alt="{{ b.first_name }}"
+             style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--capi-rosa);">
+        {% else %}
+        <div style="width:42px;height:42px;border-radius:50%;background:var(--gradient-capi);
+                    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+                    font-weight:700;font-size:1.1rem;line-height:1;color:white;user-select:none;">
+          {{ b.first_name[:1] }}
+        </div>
+        {% endif %}
         <div>
-          <strong>{{ b.name }}</strong>
+          <div style="display:flex;align-items:center;gap:0.3rem;flex-wrap:wrap;">
+            <strong>{{ b.first_name }} {{ b.last_name }} {{ b.second_last_name or '' }}</strong>
+            {{ student_badges(b) }}
+          </div>
           <small class="text-muted">{{ b.group_name }} &middot; {{ b.birth_date|fecha_mx }}</small>
         </div>
       </div>
