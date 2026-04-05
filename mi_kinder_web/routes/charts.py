@@ -79,7 +79,7 @@ def group_averages():
     bars = ax.bar(area_names, values, color=[colors[i % len(colors)] for i in range(len(area_names))])
 
     ax.set_ylabel("Promedio")
-    ax.set_title("Promedios por Area")
+    ax.set_title("Promedios por Área")
     ax.set_ylim(0, 3.5)
     ax.tick_params(axis="x", rotation=30)
 
@@ -163,7 +163,7 @@ def group_distribution():
     ax.set_xticks(x)
     ax.set_xticklabels(area_names, rotation=30, ha="right")
     ax.set_ylabel("Cantidad de alumnos")
-    ax.set_title("Distribucion de Niveles por Area")
+    ax.set_title("Distribución de Niveles por Área")
     ax.legend()
     fig.tight_layout()
 

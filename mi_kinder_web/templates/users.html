@@ -28,7 +28,7 @@
             <td><strong>{{ u.full_name }}</strong></td>
             <td><code>{{ u.username }}</code></td>
             <td>
-              <span class="badge badge-{{ 'info' if u.role == 'directora' else 'outline' }}">
+              <span class="badge badge-{{ 'info' if u.role == 'directora' else 'success' }}">
                 {{ u.role|capitalize }}
               </span>
             </td>

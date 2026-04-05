@@ -63,13 +63,13 @@ class PDFService:
         # Datos del alumno
         pdf.section_title("Datos del Alumno")
         pdf.key_value("Nombre", student.full_name)
-        pdf.key_value("Grupo", student.group_name or "—")
-        pdf.key_value("CURP", student.curp or "—")
-        pdf.key_value("Fecha nacimiento", student.birth_date or "—")
-        gender = {"M": "Nino", "F": "Nina"}.get(student.gender or "", "—")
+        pdf.key_value("Grupo", student.group_name or "-")
+        pdf.key_value("CURP", student.curp or "-")
+        pdf.key_value("Fecha nacimiento", student.birth_date or "-")
+        gender = {"M": "Nino", "F": "Nina"}.get(student.gender or "", "-")
         pdf.key_value("Genero", gender)
-        pdf.key_value("Tutor", student.guardian_name or "—")
-        pdf.key_value("Telefono tutor", student.guardian_phone or "—")
+        pdf.key_value("Tutor", student.guardian_name or "-")
+        pdf.key_value("Telefono tutor", student.guardian_phone or "-")
         pdf.ln(4)
 
         # Tabla de evaluaciones
@@ -97,7 +97,7 @@ class PDFService:
                 pdf.cell(col_w_name, 7, a.name[:28], border=1)
                 for p in periods:
                     ev = eval_table.get((a.id, p.id))
-                    label = ev.grade_label if ev and ev.grade_label else "—"
+                    label = ev.grade_label if ev and ev.grade_label else "-"
                     if ev and ev.grade_color:
                         r, g, b = self._hex_to_rgb(ev.grade_color)
                         pdf.set_fill_color(r, g, b)
@@ -143,7 +143,7 @@ class PDFService:
         pdf.alias_nb_pages()
         pdf.add_page()
 
-        pdf.section_title(f"Reporte Grupal — {group.name}")
+        pdf.section_title(f"Reporte Grupal - {group.name}")
         pdf.key_value("Total alumnos", str(len(students)))
         pdf.ln(4)
 
@@ -201,7 +201,7 @@ class PDFService:
             pdf.cell(col_w_name, 6, gd["group"].name, border=1)
             for a in areas:
                 val = gd["averages"].get(a.name)
-                text = f"{val:.1f}" if val else "—"
+                text = f"{val:.1f}" if val else "-"
                 pdf.cell(col_w_area, 6, text, border=1, align="C")
             pdf.ln()
 

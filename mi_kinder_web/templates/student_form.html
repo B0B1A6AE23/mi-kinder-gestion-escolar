@@ -40,12 +40,12 @@
           <select id="group_id" name="group_id" class="form-control" required>
             <option value="">-- Seleccionar --</option>
             {% for g in groups %}
-            <option value="{{ g.id }}" {{ 'selected' if student and student.group_id == g.id }}>{{ g.name }}</option>
+            <option value="{{ g.id }}" {{ 'selected' if (student and student.group_id == g.id) or (not student and preselect_group_id == g.id) }}>{{ g.name }}</option>
             {% endfor %}
           </select>
         </div>
         <div class="form-group" style="flex:1;">
-          <label for="gender" class="form-label">Genero</label>
+          <label for="gender" class="form-label">Género</label>
           <select id="gender" name="gender" class="form-control">
             <option value="">-- Seleccionar --</option>
             <option value="M" {{ 'selected' if student and student.gender == 'M' }}>Masculino</option>
@@ -80,7 +80,7 @@
                  value="{{ student.guardian_name if student else '' }}">
         </div>
         <div class="form-group" style="flex:1;">
-          <label for="guardian_phone" class="form-label">Telefono</label>
+          <label for="guardian_phone" class="form-label">Teléfono</label>
           <input type="tel" id="guardian_phone" name="guardian_phone" class="form-control"
                  value="{{ student.guardian_phone if student else '' }}" placeholder="9711234567">
         </div>
@@ -93,13 +93,13 @@
                  value="{{ student.guardian_email if student else '' }}">
         </div>
         <div class="form-group" style="flex:1;">
-          <label for="address" class="form-label">Direccion</label>
+          <label for="address" class="form-label">Dirección</label>
           <input type="text" id="address" name="address" class="form-control"
                  value="{{ student.address if student else '' }}">
         </div>
       </div>
 
-      <h3 class="form-section-title">Informacion Medica</h3>
+      <h3 class="form-section-title">Información Médica</h3>
 
       <div class="form-row">
         <div class="form-group" style="flex:1;">
@@ -119,7 +119,7 @@
       </div>
 
       <div class="form-group">
-        <label for="medical_notes" class="form-label">Notas Medicas</label>
+        <label for="medical_notes" class="form-label">Notas Médicas</label>
         <textarea id="medical_notes" name="medical_notes" class="form-control" rows="3"
                   placeholder="Condiciones especiales, medicamentos, etc.">{{ student.medical_notes if student else '' }}</textarea>
       </div>

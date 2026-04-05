@@ -1,99 +1,151 @@
 /* ==========================================================
-   Kinder Design System - CSS Variables & Reset
-   Colegio CAPI - Centro de Atencion Psicopedagogica Infantil
+   CAPI Design System - Colegio CAPI
+   Centro de Atención Psicopedagógica Infantil
+   Matías Romero, Oaxaca, México
    ========================================================== */
 
 :root {
-  /* Brand Colors */
+  /* ─── Brand Colors ─── */
   --sunshine: #FFD54F;
+  --sunshine-dark: #F9A825;
+  --sunshine-light: #FFF8E1;
   --clay: #FF7043;
+  --clay-dark: #E5532E;
+  --clay-light: #FBE9E7;
   --ocean: #1A3A5C;
+  --ocean-dark: #0F2035;
+  --ocean-mid: #2D5F8A;
+  --ocean-light: #4A86B8;
+  --ocean-faint: #EBF2FA;
+  --ocean-ultra-faint: #F5F9FD;
   --cream: #FDF8F3;
-  --wood: #5D4037;
-  --leaf: #66BB6A;
-  --coral: #FF8A80;
-  --lavender: #CE93D8;
+  --cream-warm: #F7EDE0;
+  --cream-border: #EAD9C5;
 
-  /* Ink / Text */
-  --ink: #2D3436;
-  --ink-light: #636E72;
-  --ink-lighter: #B2BEC3;
-  --ink-faint: #DFE6E9;
+  /* ─── Neutral Scale (base: ocean toned) ─── */
+  --neutral-950: #0C1A28;
+  --neutral-900: #1A2C3E;
+  --neutral-800: #2E4460;
+  --neutral-700: #3D5C7E;
+  --neutral-600: #5A7A9E;
+  --neutral-500: #7B9BBE;
+  --neutral-400: #A3BCE0;
+  --neutral-300: #C8D9EF;
+  --neutral-200: #E2EDF8;
+  --neutral-100: #F0F5FB;
+  --neutral-50:  #F8FBFE;
 
-  /* Semantic */
-  --success: #4CAF50;
-  --success-light: #E8F5E9;
-  --warning: #FFC107;
-  --warning-light: #FFF8E1;
-  --error: #F44336;
-  --error-light: #FFEBEE;
-  --info: #2196F3;
-  --info-light: #E3F2FD;
+  /* ─── Semantic Colors ─── */
+  --success: #16A34A;
+  --success-mid: #22C55E;
+  --success-light: #DCFCE7;
+  --success-bg: #F0FDF4;
+  --warning: #D97706;
+  --warning-mid: #F59E0B;
+  --warning-light: #FEF3C7;
+  --warning-bg: #FFFBEB;
+  --error: #DC2626;
+  --error-mid: #EF4444;
+  --error-light: #FEE2E2;
+  --error-bg: #FFF5F5;
+  --info: #2563EB;
+  --info-mid: #3B82F6;
+  --info-light: #DBEAFE;
+  --info-bg: #EFF6FF;
 
-  /* Surfaces */
+  /* ─── Surfaces ─── */
   --surface: #FFFFFF;
-  --surface-hover: #F5F5F5;
-  --surface-pressed: #EEEEEE;
+  --surface-raised: #FAFAFA;
+  --surface-hover: #F4F7FB;
+  --surface-pressed: #E8EFF7;
   --bg: var(--cream);
-  --border: #E0E0E0;
-  --border-light: #F0F0F0;
+  --border: #E2EAF2;
+  --border-strong: #C8D9EF;
+  --border-light: #F0F5FB;
 
-  /* Sidebar */
+  /* ─── Sidebar ─── */
   --sidebar-bg: var(--ocean);
-  --sidebar-text: rgba(255, 255, 255, 0.85);
+  --sidebar-text: rgba(255, 255, 255, 0.80);
+  --sidebar-text-muted: rgba(255, 255, 255, 0.45);
   --sidebar-text-active: #FFFFFF;
-  --sidebar-hover: rgba(255, 255, 255, 0.08);
-  --sidebar-active: rgba(255, 255, 255, 0.15);
-  --sidebar-width: 260px;
+  --sidebar-hover: rgba(255, 255, 255, 0.07);
+  --sidebar-active: rgba(255, 255, 255, 0.13);
+  --sidebar-width: 256px;
+  --sidebar-width-mobile: 280px;
 
-  /* Typography */
-  --font-heading: 'Nunito', 'Segoe UI', sans-serif;
-  --font-body: 'Quicksand', 'Segoe UI', sans-serif;
-  --font-button: 'Varela Round', 'Segoe UI', sans-serif;
-  --font-mono: 'Consolas', 'Courier New', monospace;
+  /* ─── Typography — PLUS JAKARTA SANS + DM SANS ─── */
+  --font-heading: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  --font-body: 'DM Sans', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
 
-  /* Sizes */
-  --text-xs: 0.75rem;
-  --text-sm: 0.85rem;
-  --text-base: 0.95rem;
-  --text-md: 1.05rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.5rem;
-  --text-2xl: 2rem;
+  /* ─── Type Scale ─── */
+  --text-xs:   0.72rem;   /* 11.5px */
+  --text-sm:   0.8125rem; /* 13px */
+  --text-base: 0.9375rem; /* 15px */
+  --text-md:   1rem;      /* 16px */
+  --text-lg:   1.125rem;  /* 18px */
+  --text-xl:   1.375rem;  /* 22px */
+  --text-2xl:  1.75rem;   /* 28px */
+  --text-3xl:  2.25rem;   /* 36px */
 
-  /* Spacing */
-  --sp-1: 0.25rem;
-  --sp-2: 0.5rem;
-  --sp-3: 0.75rem;
-  --sp-4: 1rem;
-  --sp-5: 1.25rem;
-  --sp-6: 1.5rem;
-  --sp-8: 2rem;
-  --sp-10: 2.5rem;
-  --sp-12: 3rem;
+  /* ─── Spacing Scale (4px base) ─── */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
 
-  /* Radii */
+  /* ─── Border Radius ─── */
+  --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.10);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+  /* ─── Shadows (ocean-tinted, layered) ─── */
+  --shadow-xs: 0 1px 2px rgba(26, 58, 92, 0.04);
+  --shadow-sm: 0 1px 3px rgba(26, 58, 92, 0.06), 0 1px 2px rgba(26, 58, 92, 0.04);
+  --shadow-md: 0 4px 6px rgba(26, 58, 92, 0.05), 0 2px 4px rgba(26, 58, 92, 0.04);
+  --shadow-lg: 0 10px 15px rgba(26, 58, 92, 0.07), 0 4px 6px rgba(26, 58, 92, 0.04);
+  --shadow-xl: 0 20px 25px rgba(26, 58, 92, 0.08), 0 8px 10px rgba(26, 58, 92, 0.04);
+  --shadow-2xl: 0 25px 50px rgba(26, 58, 92, 0.12);
+  --shadow-clay: 0 4px 14px rgba(255, 112, 67, 0.25);
+  --shadow-ocean: 0 4px 14px rgba(26, 58, 92, 0.18);
 
-  /* Transitions */
+  /* ─── Gradients ─── */
+  --gradient-ocean: linear-gradient(135deg, var(--ocean-dark) 0%, var(--ocean) 60%, var(--ocean-mid) 100%);
+  --gradient-hero: linear-gradient(135deg, #0C1A28 0%, #1A3A5C 45%, #2D5F8A 75%, #FF7043 100%);
+  --gradient-clay: linear-gradient(135deg, var(--clay) 0%, var(--clay-dark) 100%);
+  --gradient-sunshine: linear-gradient(135deg, var(--sunshine) 0%, var(--sunshine-dark) 100%);
+  --gradient-card: linear-gradient(180deg, #FFFFFF 0%, #F8FBFE 100%);
+  --gradient-topbar: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.96) 100%);
+
+  /* ─── Transitions ─── */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 400ms;
+  --ease-decel: cubic-bezier(0, 0, 0.2, 1);
+  --dur-instant: 100ms;
+  --dur-fast: 150ms;
+  --dur-normal: 220ms;
+  --dur-slow: 350ms;
+  --dur-enter: 400ms;
 
-  /* Z-index */
+  /* ─── Animation Delays (stagger) ─── */
+  --stagger-1: 0ms;
+  --stagger-2: 60ms;
+  --stagger-3: 120ms;
+  --stagger-4: 180ms;
+
+  /* ─── Z-Index ─── */
+  --z-base: 1;
   --z-dropdown: 100;
   --z-sticky: 200;
   --z-sidebar: 300;
@@ -103,9 +155,8 @@
 }
 
 /* ==========================================================
-   Reset
+   Reset & Base
    ========================================================== */
-
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -116,6 +167,7 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
 }
 
@@ -123,7 +175,7 @@ body {
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: 1.6;
-  color: var(--ink);
+  color: var(--neutral-900);
   background-color: var(--bg);
   min-height: 100vh;
 }
@@ -131,19 +183,18 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 700;
-  line-height: 1.3;
-  color: var(--ink);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--neutral-950);
 }
 
 a {
   color: var(--ocean);
   text-decoration: none;
-  transition: color var(--duration-fast) var(--ease-out);
+  transition: color var(--dur-fast) var(--ease-out);
 }
 
-a:hover {
-  color: var(--clay);
-}
+a:hover { color: var(--clay); }
 
 img {
   max-width: 100%;
@@ -153,23 +204,66 @@ img {
 
 code {
   font-family: var(--font-mono);
-  font-size: 0.88em;
-  background: var(--surface-hover);
-  padding: 0.15em 0.4em;
-  border-radius: var(--radius-sm);
-  color: var(--wood);
+  font-size: 0.875em;
+  background: var(--neutral-100);
+  padding: 0.15em 0.45em;
+  border-radius: var(--radius-xs);
+  color: var(--ocean-mid);
+  border: 1px solid var(--border);
 }
 
 ::selection {
-  background: var(--sunshine);
-  color: var(--ink);
+  background: var(--sunshine-light);
+  color: var(--ocean-dark);
 }
 
-/* Utility classes */
-.text-center { text-align: center; }
-.text-right { text-align: right; }
-.text-muted { color: var(--ink-light); }
-.text-sm { font-size: var(--text-sm); }
+/* ─── Entrance Animations ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+
+.animate-fade-up  { animation: fadeUp  var(--dur-enter) var(--ease-out) both; }
+.animate-fade-in  { animation: fadeIn  var(--dur-enter) var(--ease-out) both; }
+.animate-scale-in { animation: scaleIn var(--dur-enter) var(--ease-out) both; }
+
+.delay-1 { animation-delay: var(--stagger-1); }
+.delay-2 { animation-delay: var(--stagger-2); }
+.delay-3 { animation-delay: var(--stagger-3); }
+.delay-4 { animation-delay: var(--stagger-4); }
+
+/* ─── Utility Classes ─── */
+.text-center  { text-align: center; }
+.text-right   { text-align: right; }
+.text-muted   { color: var(--neutral-500); }
+.text-sm      { font-size: var(--text-sm); }
+.text-xs      { font-size: var(--text-xs); }
+.text-ocean   { color: var(--ocean); }
+.text-clay    { color: var(--clay); }
 .text-success { color: var(--success); }
 .text-warning { color: var(--warning); }
-.text-error { color: var(--error); }
+.text-error   { color: var(--error); }
+.fw-medium    { font-weight: 500; }
+.fw-semibold  { font-weight: 600; }
+.fw-bold      { font-weight: 700; }
+.fw-black     { font-weight: 800; }
+
+.tabular-nums {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}

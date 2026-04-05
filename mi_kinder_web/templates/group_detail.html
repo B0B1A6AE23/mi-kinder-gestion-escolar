@@ -12,14 +12,22 @@
     </p>
   </div>
   {% if is_directora %}
-  <a href="{{ url_for('groups.edit', group_id=group.id) }}" class="btn btn-outline">Editar Grupo</a>
+  <div style="display:flex;gap:var(--sp-2)">
+    <a href="{{ url_for('groups.edit', group_id=group.id) }}" class="btn btn-outline">Editar Grupo</a>
+    <form method="post" action="{{ url_for('groups.delete', group_id=group.id) }}" style="margin:0">
+      <button type="submit" class="btn btn-outline" style="color:var(--error);border-color:var(--error)"
+              onclick="return confirm('¿Eliminar el grupo {{ group.name }}? Esta acción no se puede deshacer.')">
+        Eliminar Grupo
+      </button>
+    </form>
+  </div>
   {% endif %}
 </div>
 
 <div class="card">
   <div class="card-header">
     <h2 class="card-title">Alumnos ({{ students|length }})</h2>
-    <a href="{{ url_for('students.create') }}" class="btn btn-sm btn-primary">+ Agregar Alumno</a>
+    <a href="{{ url_for('students.create', group_id=group.id) }}" class="btn btn-sm btn-primary">+ Agregar Alumno</a>
   </div>
   <div class="card-body">
     {% if students %}
@@ -30,7 +38,7 @@
             <th>#</th>
             <th>Nombre</th>
             <th>CURP</th>
-            <th>Genero</th>
+            <th>Género</th>
             <th>Tutor</th>
             <th>Acciones</th>
           </tr>
@@ -45,7 +53,7 @@
               </a>
             </td>
             <td><code>{{ s.curp or '---' }}</code></td>
-            <td>{{ 'Nino' if s.gender == 'M' else ('Nina' if s.gender == 'F' else '---') }}</td>
+            <td>{{ 'Niño' if s.gender == 'M' else ('Niña' if s.gender == 'F' else '---') }}</td>
             <td>{{ s.guardian_name or '---' }}</td>
             <td>
               <a href="{{ url_for('students.detail', student_id=s.id) }}" class="btn btn-xs btn-outline">Ver</a>
@@ -61,7 +69,7 @@
       <div class="empty-icon">🎒</div>
       <h3>Sin alumnos</h3>
       <p>Este grupo no tiene alumnos registrados.</p>
-      <a href="{{ url_for('students.create') }}" class="btn btn-primary">Agregar Alumno</a>
+      <a href="{{ url_for('students.create', group_id=group.id) }}" class="btn btn-primary">Agregar Alumno</a>
     </div>
     {% endif %}
   </div>

@@ -124,12 +124,24 @@ def detail(student_id):
         (student_id,),
     ).fetchall()
 
+    active_year = db.execute(
+        "SELECT * FROM school_years WHERE is_active = 1"
+    ).fetchone()
+    year_id = active_year["id"] if active_year else 0
+
+    groups = db.execute(
+        "SELECT * FROM groups_ WHERE school_year_id = ? AND is_active = 1 ORDER BY name",
+        (year_id,),
+    ).fetchall()
+
     return render_template(
         "student_detail.html",
         student=student,
         att_summary=att_summary,
         evaluations=evaluations,
         observations=observations,
+        groups=groups,
+        is_directora=(current_user.role == "directora"),
     )
 
 
@@ -199,7 +211,8 @@ def create():
         flash(f"Alumno '{first_name} {last_name}' registrado.", "success")
         return redirect(url_for("students.index"))
 
-    return render_template("student_form.html", student=None, groups=groups)
+    preselect_group_id = request.args.get("group_id", type=int)
+    return render_template("student_form.html", student=None, groups=groups, preselect_group_id=preselect_group_id)
 
 
 @students_bp.route("/students/<int:student_id>/edit", methods=["GET", "POST"])

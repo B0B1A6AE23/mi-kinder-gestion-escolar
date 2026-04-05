@@ -32,11 +32,11 @@
           <dd>{{ student.birth_date|fecha_mx if student.birth_date else '---' }}</dd>
         </div>
         <div class="detail-item">
-          <dt>Genero</dt>
-          <dd>{{ 'Nino' if student.gender == 'M' else ('Nina' if student.gender == 'F' else '---') }}</dd>
+          <dt>Género</dt>
+          <dd>{{ 'Niño' if student.gender == 'M' else ('Niña' if student.gender == 'F' else '---') }}</dd>
         </div>
         <div class="detail-item">
-          <dt>Fecha de Inscripcion</dt>
+          <dt>Fecha de Inscripción</dt>
           <dd>{{ student.enrollment_date|fecha_mx if student.enrollment_date else '---' }}</dd>
         </div>
         <div class="detail-item">
@@ -48,7 +48,7 @@
           <dd>{{ student.allergies or 'Ninguna' }}</dd>
         </div>
         <div class="detail-item">
-          <dt>Notas Medicas</dt>
+          <dt>Notas Médicas</dt>
           <dd>{{ student.medical_notes or 'Ninguna' }}</dd>
         </div>
       </dl>
@@ -67,7 +67,7 @@
           <dd>{{ student.guardian_name or '---' }}</dd>
         </div>
         <div class="detail-item">
-          <dt>Telefono</dt>
+          <dt>Teléfono</dt>
           <dd>{{ student.guardian_phone or '---' }}</dd>
         </div>
         <div class="detail-item">
@@ -75,7 +75,7 @@
           <dd>{{ student.guardian_email or '---' }}</dd>
         </div>
         <div class="detail-item">
-          <dt>Direccion</dt>
+          <dt>Dirección</dt>
           <dd>{{ student.address or '---' }}</dd>
         </div>
       </dl>
@@ -88,7 +88,7 @@
       <h2 class="card-title">Asistencia</h2>
     </div>
     <div class="card-body">
-      <div class="attendance-summary">
+      <div class="attendance-summary" style="grid-template-columns: repeat(2, 1fr);">
         <div class="att-stat att-present">
           <span class="att-value">{{ att_summary.get('present', 0) }}</span>
           <span class="att-label">Presentes</span>
@@ -126,7 +126,7 @@
     <div class="card-body">
       <form method="POST" action="{{ url_for('students.toggle_active', student_id=student.id) }}" style="margin-bottom:1rem;">
         <button type="submit" class="btn btn-{{ 'error' if student.is_active else 'success' }} btn-block"
-                onclick="return confirm('{{ 'Dar de baja al alumno?' if student.is_active else 'Reactivar al alumno?' }}')">
+                onclick="return confirm('{{ ('¿Dar de baja a ' ~ student.first_name ~ ' ' ~ student.last_name ~ '?') if student.is_active else ('¿Reactivar a ' ~ student.first_name ~ ' ' ~ student.last_name ~ '?') }}')">
           {{ 'Dar de Baja' if student.is_active else 'Reactivar Alumno' }}
         </button>
       </form>
@@ -136,13 +136,15 @@
         <div class="form-group">
           <select name="to_group_id" class="form-control" required>
             <option value="">-- Seleccionar grupo --</option>
-            {% for g in [] %}
+            {% for g in groups %}
+            {% if g.id != student.group_id %}
             <option value="{{ g.id }}">{{ g.name }}</option>
+            {% endif %}
             {% endfor %}
           </select>
         </div>
         <div class="form-group">
-          <input type="text" name="reason" class="form-control" placeholder="Razon de transferencia">
+          <input type="text" name="reason" class="form-control" placeholder="Razón de transferencia">
         </div>
         <button type="submit" class="btn btn-outline btn-block">Transferir</button>
       </form>
@@ -163,8 +165,8 @@
         <thead>
           <tr>
             <th>Periodo</th>
-            <th>Area</th>
-            <th>Calificacion</th>
+            <th>Área</th>
+            <th>Calificación</th>
             <th>Observaciones</th>
           </tr>
         </thead>

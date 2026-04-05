@@ -54,9 +54,9 @@
             <th>#</th>
             <th>Nombre</th>
             <th>Grupo</th>
-            <th>Genero</th>
+            <th>Género</th>
             <th>Tutor</th>
-            <th>Telefono</th>
+            <th>Teléfono</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -70,7 +70,7 @@
               </a>
             </td>
             <td><span class="badge badge-outline">{{ s.group_name }}</span></td>
-            <td>{{ 'M' if s.gender == 'M' else ('F' if s.gender == 'F' else '---') }}</td>
+            <td>{{ 'Niño' if s.gender == 'M' else ('Niña' if s.gender == 'F' else '---') }}</td>
             <td>{{ s.guardian_name or '---' }}</td>
             <td>{{ s.guardian_phone or '---' }}</td>
             <td>

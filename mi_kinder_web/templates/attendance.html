@@ -38,7 +38,7 @@
 
   <div class="card">
     <div class="card-header">
-      <h2 class="card-title">Lista de Asistencia ({{ students|length }} alumnos)</h2>
+      <h2 class="card-title">Lista de Asistencia ({{ students|length }} {{ 'alumno' if students|length == 1 else 'alumnos' }})</h2>
       <button type="submit" class="btn btn-primary">Guardar Asistencia</button>
     </div>
     <div class="card-body">

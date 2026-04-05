@@ -3,13 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1A3A5C">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>{% block title %}{{ app_name }}{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=Varela+Round&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/kinder-design-system.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <style>
+    .sidebar-logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #FFD54F 0%, #F9A825 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(255, 213, 79, 0.35);
+    }
+    .sidebar-logo-mark span {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #0F2035;
+      letter-spacing: -0.5px;
+    }
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1A3A5C, #2D5F8A);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(26, 58, 92, 0.2);
+    }
+  </style>
   {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -17,68 +55,95 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <span class="sidebar-logo">🏫</span>
+        <div class="sidebar-logo-mark">
+          <span>CA</span>
+        </div>
         <div>
           <h2 class="sidebar-title">Colegio CAPI</h2>
-          <p class="sidebar-subtitle">Gestion Escolar</p>
+          <p class="sidebar-subtitle">Gest. Escolar</p>
         </div>
       </div>
 
       <nav class="sidebar-nav">
-        <a href="{{ url_for('dashboard.index') }}" class="nav-item {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
-          <span class="nav-icon">📊</span>
+        <a href="{{ url_for('dashboard.index') }}"
+           class="nav-item {% if request.endpoint == 'dashboard.index' %}active{% endif %}"
+           title="Dashboard">
+          <span class="nav-icon" aria-hidden="true">📊</span>
           <span class="nav-label">Dashboard</span>
         </a>
-        <a href="{{ url_for('groups.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('groups.') %}active{% endif %}">
-          <span class="nav-icon">👥</span>
+        <a href="{{ url_for('groups.index') }}"
+           class="nav-item {% if request.endpoint and request.endpoint.startswith('groups.') %}active{% endif %}"
+           title="Grupos">
+          <span class="nav-icon" aria-hidden="true">👥</span>
           <span class="nav-label">Grupos</span>
         </a>
-        <a href="{{ url_for('students.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('students.') %}active{% endif %}">
-          <span class="nav-icon">🎒</span>
+        <a href="{{ url_for('students.index') }}"
+           class="nav-item {% if request.endpoint and request.endpoint.startswith('students.') %}active{% endif %}"
+           title="Alumnos">
+          <span class="nav-icon" aria-hidden="true">🎒</span>
           <span class="nav-label">Alumnos</span>
         </a>
-        <a href="{{ url_for('evaluations.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('evaluations.') %}active{% endif %}">
-          <span class="nav-icon">📝</span>
+        <a href="{{ url_for('evaluations.index') }}"
+           class="nav-item {% if request.endpoint and request.endpoint.startswith('evaluations.') %}active{% endif %}"
+           title="Evaluaciones">
+          <span class="nav-icon" aria-hidden="true">📝</span>
           <span class="nav-label">Evaluaciones</span>
         </a>
-        <a href="{{ url_for('attendance.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('attendance.') %}active{% endif %}">
-          <span class="nav-icon">📋</span>
+        <a href="{{ url_for('attendance.index') }}"
+           class="nav-item {% if request.endpoint and request.endpoint.startswith('attendance.') %}active{% endif %}"
+           title="Asistencia">
+          <span class="nav-icon" aria-hidden="true">📋</span>
           <span class="nav-label">Asistencia</span>
         </a>
-        <a href="{{ url_for('reports.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('reports.') %}active{% endif %}">
-          <span class="nav-icon">📄</span>
+        <a href="{{ url_for('reports.index') }}"
+           class="nav-item {% if request.endpoint and request.endpoint.startswith('reports.') %}active{% endif %}"
+           title="Reportes y Boletas">
+          <span class="nav-icon" aria-hidden="true">📄</span>
           <span class="nav-label">Reportes / Boletas</span>
         </a>
-        <a href="{{ url_for('charts.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('charts.') %}active{% endif %}">
-          <span class="nav-icon">📈</span>
-          <span class="nav-label">Graficas</span>
+        <a href="{{ url_for('charts.index') }}"
+           class="nav-item {% if request.endpoint and request.endpoint.startswith('charts.') %}active{% endif %}"
+           title="Gráficas">
+          <span class="nav-icon" aria-hidden="true">📈</span>
+          <span class="nav-label">Gráficas</span>
         </a>
-        <a href="{{ url_for('socioemocional.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('socioemocional.') %}active{% endif %}">
-          <span class="nav-icon">💚</span>
+        <a href="{{ url_for('socioemocional.index') }}"
+           class="nav-item {% if request.endpoint and request.endpoint.startswith('socioemocional.') %}active{% endif %}"
+           title="Socioemocional">
+          <span class="nav-icon" aria-hidden="true">💚</span>
           <span class="nav-label">Socioemocional</span>
         </a>
 
         {% if is_directora %}
         <div class="nav-divider"></div>
-        <a href="{{ url_for('users.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('users.') %}active{% endif %}">
-          <span class="nav-icon">👤</span>
+        <a href="{{ url_for('users.index') }}"
+           class="nav-item {% if request.endpoint and request.endpoint.startswith('users.') %}active{% endif %}"
+           title="Usuarios">
+          <span class="nav-icon" aria-hidden="true">👤</span>
           <span class="nav-label">Usuarios</span>
         </a>
-        <a href="{{ url_for('settings.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('settings.') %}active{% endif %}">
-          <span class="nav-icon">⚙️</span>
+        <a href="{{ url_for('settings.index') }}"
+           class="nav-item {% if request.endpoint and request.endpoint.startswith('settings.') %}active{% endif %}"
+           title="Ajustes">
+          <span class="nav-icon" aria-hidden="true">⚙️</span>
           <span class="nav-label">Ajustes</span>
         </a>
         {% endif %}
       </nav>
 
       <div class="sidebar-footer">
-        <a href="{{ url_for('profile.index') }}" class="nav-item {% if request.endpoint and request.endpoint.startswith('profile.') %}active{% endif %}">
-          <span class="nav-icon">👤</span>
+        <a href="{{ url_for('profile.index') }}"
+           class="nav-item {% if request.endpoint and request.endpoint.startswith('profile.') %}active{% endif %}"
+           title="{{ current_user.full_name }}">
+          <span class="nav-icon" aria-hidden="true">👤</span>
           <span class="nav-label">{{ current_user.full_name }}</span>
         </a>
-        <a href="{{ url_for('auth.logout') }}" class="nav-item nav-logout">
-          <span class="nav-icon">🚪</span>
-          <span class="nav-label">Cerrar Sesion</span>
+        <a href="{{ url_for('auth.logout') }}"
+           class="nav-item nav-logout"
+           aria-label="Cerrar sesión"
+           title="Cerrar sesión">
+          <span class="nav-icon" aria-hidden="true">🚪</span>
+          <span class="nav-label">Cerrar Sesión</span>
         </a>
       </div>
     </aside>
@@ -92,13 +157,17 @@
         </button>
         <div class="topbar-info">
           {% if active_year %}
-          <span class="badge badge-info">{{ active_year.name }}</span>
+          <span class="badge badge-info">📅 {{ active_year.name }}</span>
+          {% endif %}
+          {% if active_year and current_period %}
+          <span style="color:var(--ink-lighter); font-size:0.8rem;" aria-hidden="true">&bull;</span>
           {% endif %}
           {% if current_period %}
           <span class="badge badge-outline">{{ current_period.name }}</span>
           {% endif %}
         </div>
         <div class="topbar-user">
+          <div class="user-avatar" aria-hidden="true">{{ current_user.full_name[:1] }}</div>
           <span class="topbar-role">{{ current_user.role|capitalize }}</span>
           <span class="topbar-name">{{ current_user.full_name }}</span>
         </div>
@@ -119,7 +188,7 @@
       {% endwith %}
 
       <!-- Page Content -->
-      <div class="page-content">
+      <div class="page-content animate-fade-in">
         {% block content %}{% endblock %}
       </div>
     </main>

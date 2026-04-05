@@ -79,7 +79,7 @@ def update_school_info():
          email or None, director_name or None),
     )
     db.commit()
-    flash("Informacion escolar actualizada.", "success")
+    flash("Información escolar actualizada.", "success")
     return redirect(url_for("settings.index"))
 
 
@@ -191,7 +191,7 @@ def create_area():
     sort_order = request.form.get("sort_order", type=int, default=0)
 
     if not name:
-        flash("El nombre del area es obligatorio.", "error")
+        flash("El nombre del área es obligatorio.", "error")
         return redirect(url_for("settings.index"))
 
     db.execute(
@@ -200,5 +200,5 @@ def create_area():
         (active_year["id"], name, description or None, sort_order),
     )
     db.commit()
-    flash(f"Area de evaluacion '{name}' creada.", "success")
+    flash(f"Área de evaluación '{name}' creada.", "success")
     return redirect(url_for("settings.index"))

@@ -5,11 +5,22 @@
 <div class="page-header">
   <div>
     <a href="{{ url_for('reports.index') }}" class="btn btn-ghost btn-sm">&larr; Reportes</a>
-    <h1 class="page-title">Boleta de Evaluacion</h1>
+    <h1 class="page-title">Boleta de Evaluación</h1>
     <p class="page-subtitle">{{ student.first_name }} {{ student.last_name }} {{ student.second_last_name or '' }}</p>
   </div>
   <div class="header-actions">
     <a href="{{ url_for('reports.individual_pdf', student_id=student.id) }}" class="btn btn-primary">Descargar PDF</a>
+  </div>
+</div>
+
+<!-- School Header -->
+<div class="card" style="margin-bottom: 1.5rem; border-top: 4px solid var(--primary);">
+  <div class="card-body" style="text-align: center; padding: 1.5rem;">
+    <h2 style="margin: 0 0 0.25rem; font-size: 1.4rem; color: var(--primary);">{{ app_name }}</h2>
+    {% if active_year %}
+    <p style="margin: 0; color: var(--ink-muted); font-size: 0.9rem;">{{ active_year.name }}</p>
+    {% endif %}
+    <p style="margin: 0.5rem 0 0; font-size: 1rem; font-weight: 600; color: var(--ink);">Boleta de Evaluación</p>
   </div>
 </div>
 
@@ -48,7 +59,7 @@
       <table class="table boleta-table">
         <thead>
           <tr>
-            <th>Area de Evaluacion</th>
+            <th>Área de Evaluación</th>
             {% for p in periods %}
             <th class="text-center">{{ p.name }}</th>
             {% endfor %}
@@ -80,7 +91,7 @@
 {% else %}
 <div class="card" style="margin-bottom: 1.5rem;">
   <div class="card-body">
-    <p class="text-muted text-center">No hay areas de evaluacion o periodos configurados.</p>
+    <p class="text-muted text-center">No hay áreas de evaluación o periodos configurados.</p>
   </div>
 </div>
 {% endif %}

@@ -9,7 +9,7 @@
 <!-- School Info -->
 <div class="card" style="margin-bottom: 1.5rem;">
   <div class="card-header">
-    <h2 class="card-title">Informacion de la Escuela</h2>
+    <h2 class="card-title">Información de la Escuela</h2>
   </div>
   <div class="card-body">
     <form method="POST" action="{{ url_for('settings.update_school_info') }}">
@@ -27,12 +27,12 @@
       </div>
       <div class="form-row">
         <div class="form-group" style="flex:2;">
-          <label for="address" class="form-label">Direccion</label>
+          <label for="address" class="form-label">Dirección</label>
           <input type="text" id="address" name="address" class="form-control"
                  value="{{ school_info.address if school_info and school_info.address else '' }}">
         </div>
         <div class="form-group" style="flex:1;">
-          <label for="phone" class="form-label">Telefono</label>
+          <label for="phone" class="form-label">Teléfono</label>
           <input type="text" id="phone" name="phone" class="form-control"
                  value="{{ school_info.phone if school_info and school_info.phone else '' }}">
         </div>
@@ -42,7 +42,7 @@
         <input type="email" id="email" name="email" class="form-control" style="max-width:400px;"
                value="{{ school_info.email if school_info and school_info.email else '' }}">
       </div>
-      <button type="submit" class="btn btn-primary">Guardar Informacion</button>
+      <button type="submit" class="btn btn-primary">Guardar Información</button>
     </form>
   </div>
 </div>
@@ -123,7 +123,7 @@
 <!-- Periods -->
 <div class="card" style="margin-bottom: 1.5rem;">
   <div class="card-header">
-    <h2 class="card-title">Periodos de Evaluacion</h2>
+    <h2 class="card-title">Periodos de Evaluación</h2>
   </div>
   <div class="card-body">
     {% if periods %}
@@ -181,7 +181,7 @@
 <!-- Evaluation Areas -->
 <div class="card" style="margin-bottom: 1.5rem;">
   <div class="card-header">
-    <h2 class="card-title">Areas de Evaluacion</h2>
+    <h2 class="card-title">Áreas de Evaluación</h2>
   </div>
   <div class="card-body">
     {% if areas %}
@@ -191,7 +191,7 @@
           <tr>
             <th>Orden</th>
             <th>Nombre</th>
-            <th>Descripcion</th>
+            <th>Descripción</th>
           </tr>
         </thead>
         <tbody>
@@ -207,12 +207,12 @@
     </div>
     {% endif %}
 
-    <h3 class="form-section-title">Nueva Area</h3>
+    <h3 class="form-section-title">Nueva Área</h3>
     <form method="POST" action="{{ url_for('settings.create_area') }}">
       <div class="form-row">
         <div class="form-group" style="flex:2;">
           <label class="form-label">Nombre</label>
-          <input type="text" name="name" class="form-control" required placeholder="Ej: Lenguaje y Comunicacion">
+          <input type="text" name="name" class="form-control" required placeholder="Ej: Lenguaje y Comunicación">
         </div>
         <div class="form-group" style="flex:1;">
           <label class="form-label">Orden</label>
@@ -220,10 +220,10 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Descripcion</label>
+        <label class="form-label">Descripción</label>
         <input type="text" name="description" class="form-control" placeholder="Opcional">
       </div>
-      <button type="submit" class="btn btn-primary">Crear Area</button>
+      <button type="submit" class="btn btn-primary">Crear Área</button>
     </form>
   </div>
 </div>
@@ -231,7 +231,7 @@
 <!-- Grading Scales -->
 <div class="card">
   <div class="card-header">
-    <h2 class="card-title">Escalas de Evaluacion</h2>
+    <h2 class="card-title">Escalas de Evaluación</h2>
   </div>
   <div class="card-body">
     {% for s in scales %}
@@ -250,7 +250,7 @@
     </div>
     {% endfor %}
     {% if not scales %}
-    <p class="text-muted text-center">No hay escalas de evaluacion configuradas.</p>
+    <p class="text-muted text-center">No hay escalas de evaluación configuradas.</p>
     {% endif %}
   </div>
 </div>

@@ -8,7 +8,7 @@
     <h1 class="page-title">Reporte Grupal: {{ group.name }}</h1>
     <p class="page-subtitle">
       {% if group.teacher_name %}Maestra: {{ group.teacher_name }} &middot; {% endif %}
-      {{ students|length }} alumnos
+      {{ students|length }} {{ 'alumno' if students|length == 1 else 'alumnos' }}
     </p>
   </div>
   <a href="{{ url_for('reports.group_pdf', group_id=group.id) }}" class="btn btn-primary">Descargar PDF</a>

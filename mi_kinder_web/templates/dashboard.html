@@ -3,8 +3,10 @@
 
 {% block content %}
 <div class="page-header">
-  <h1 class="page-title">Dashboard</h1>
-  <p class="page-subtitle">Resumen general del colegio</p>
+  <div>
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle">Resumen general del colegio</p>
+  </div>
 </div>
 
 <!-- Stat Cards -->
@@ -34,7 +36,7 @@
     <div class="stat-icon">📋</div>
     <div class="stat-info">
       <span class="stat-value">{{ stats.attendance_rate }}%</span>
-      <span class="stat-label">Asistencia (30 dias)</span>
+      <span class="stat-label">Asistencia (30 días)</span>
     </div>
   </div>
 </div>
@@ -42,7 +44,7 @@
 <!-- Quick Actions -->
 <div class="card" style="margin-bottom: 1.5rem;">
   <div class="card-header">
-    <h2 class="card-title">Acciones Rapidas</h2>
+    <h2 class="card-title">Acciones Rápidas</h2>
   </div>
   <div class="card-body">
     <div class="quick-actions">
@@ -150,7 +152,7 @@
 {% if birthdays %}
 <div class="card" style="margin-top: 1.5rem;">
   <div class="card-header">
-    <h2 class="card-title">Proximos Cumpleanos 🎂</h2>
+    <h2 class="card-title">Próximos Cumpleaños 🎂</h2>
   </div>
   <div class="card-body">
     <div class="birthday-list">

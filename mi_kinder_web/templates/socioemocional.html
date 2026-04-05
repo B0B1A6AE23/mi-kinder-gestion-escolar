@@ -62,7 +62,7 @@
             <input type="hidden" name="group_id" value="{{ selected_group }}">
             <input type="hidden" name="period_id" value="{{ selected_period or '' }}">
             <button type="submit" class="btn btn-xs btn-ghost text-error"
-                    onclick="return confirm('Eliminar esta observacion?')">Eliminar</button>
+                    onclick="return confirm('Eliminar esta observación?')">Eliminar</button>
           </form>
         </div>
         {% endfor %}
@@ -82,13 +82,13 @@
             <option value="conducta">Conducta</option>
             <option value="emocional">Emocional</option>
             <option value="social">Social</option>
-            <option value="academico">Academico</option>
+            <option value="academico">Académico</option>
             <option value="familiar">Familiar</option>
           </select>
         </div>
         <div class="form-group">
           <textarea name="content" class="form-control form-control-sm" rows="2"
-                    placeholder="Escribir observacion..." required></textarea>
+                    placeholder="Escribir observación..." required></textarea>
         </div>
         <button type="submit" class="btn btn-sm btn-primary">Agregar</button>
       </form>

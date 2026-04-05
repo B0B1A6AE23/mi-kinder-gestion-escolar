@@ -61,8 +61,8 @@ def students_excel():
 
     headers = [
         "Grupo", "Apellido Paterno", "Apellido Materno", "Nombre",
-        "CURP", "Fecha Nacimiento", "Genero", "Tutor",
-        "Telefono", "Email", "Fecha Inscripcion",
+        "CURP", "Fecha Nacimiento", "Género", "Tutor",
+        "Teléfono", "Email", "Fecha Inscripción",
     ]
 
     for col, header in enumerate(headers, 1):

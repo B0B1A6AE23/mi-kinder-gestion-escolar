@@ -94,7 +94,7 @@ def add_observation():
     )
     db.commit()
 
-    flash("Observacion registrada.", "success")
+    flash("Observación registrada.", "success")
     return redirect(url_for("socioemocional.index", group_id=group_id, period_id=period_id))
 
 
@@ -109,15 +109,15 @@ def delete_observation(obs_id):
         "SELECT * FROM student_observations WHERE id = ?", (obs_id,)
     ).fetchone()
     if not obs:
-        flash("Observacion no encontrada.", "error")
+        flash("Observación no encontrada.", "error")
         return redirect(url_for("socioemocional.index"))
 
     # Only author or directora can delete
     if current_user.role != "directora" and obs["created_by"] != current_user.id:
-        flash("No tienes permiso para eliminar esta observacion.", "error")
+        flash("No tienes permiso para eliminar esta observación.", "error")
         return redirect(url_for("socioemocional.index", group_id=group_id, period_id=period_id))
 
     db.execute("DELETE FROM student_observations WHERE id = ?", (obs_id,))
     db.commit()
-    flash("Observacion eliminada.", "success")
+    flash("Observación eliminada.", "success")
     return redirect(url_for("socioemocional.index", group_id=group_id, period_id=period_id))

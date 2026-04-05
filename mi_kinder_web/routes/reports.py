@@ -118,7 +118,8 @@ def individual_pdf(student_id):
         flash("No se pudo generar el reporte.", "error")
         return redirect(url_for("reports.index"))
 
-    student_name = data["student"].full_name.replace(" ", "_")
+    import re
+    student_name = re.sub(r'[^\w\-]', '_', data["student"].full_name)
     filename = f"boleta_{student_name}.pdf"
     output_path = os.path.join(EXPORTS_DIR, filename)
 
@@ -151,7 +152,10 @@ def group(group_id):
         return redirect(url_for("reports.index"))
 
     students = db.execute(
-        """SELECT s.id, s.first_name || ' ' || s.last_name as full_name
+        """SELECT s.id,
+                  s.first_name || ' ' || s.last_name ||
+                  CASE WHEN s.second_last_name IS NOT NULL AND s.second_last_name != ''
+                       THEN ' ' || s.second_last_name ELSE '' END as full_name
            FROM students s
            WHERE s.group_id = ? AND s.is_active = 1
            ORDER BY s.last_name, s.first_name""",
@@ -214,7 +218,8 @@ def group_pdf(group_id):
         flash("No se pudo generar el reporte.", "error")
         return redirect(url_for("reports.index"))
 
-    group_name = data["group"].name.replace(" ", "_")
+    import re
+    group_name = re.sub(r'[^\w\-]', '_', data["group"].name)
     filename = f"reporte_grupo_{group_name}.pdf"
     output_path = os.path.join(EXPORTS_DIR, filename)
 

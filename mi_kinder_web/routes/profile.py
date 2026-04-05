@@ -44,7 +44,7 @@ def update():
 
     if new_password:
         if not current_password:
-            flash("Ingresa tu contrasena actual.", "error")
+            flash("Ingresa tu contraseña actual.", "error")
             return redirect(url_for("profile.index"))
 
         user = db.execute(
@@ -52,15 +52,15 @@ def update():
         ).fetchone()
 
         if not bcrypt.checkpw(current_password.encode(), user["password_hash"].encode()):
-            flash("Contrasena actual incorrecta.", "error")
+            flash("Contraseña actual incorrecta.", "error")
             return redirect(url_for("profile.index"))
 
         if new_password != confirm_password:
-            flash("Las contrasenas nuevas no coinciden.", "error")
+            flash("Las contraseñas nuevas no coinciden.", "error")
             return redirect(url_for("profile.index"))
 
         if len(new_password) < 4:
-            flash("La contrasena debe tener al menos 4 caracteres.", "error")
+            flash("La contraseña debe tener al menos 4 caracteres.", "error")
             return redirect(url_for("profile.index"))
 
         password_hash = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
@@ -68,7 +68,7 @@ def update():
             "UPDATE users SET password_hash=?, updated_at=datetime('now') WHERE id=?",
             (password_hash, current_user.id),
         )
-        flash("Contrasena actualizada.", "success")
+        flash("Contraseña actualizada.", "success")
 
     db.commit()
     if full_name and not new_password:

@@ -17,8 +17,9 @@
       <div class="form-group">
         <label for="username" class="form-label">Nombre de Usuario *</label>
         <input type="text" id="username" name="username" class="form-control"
-               required placeholder="ej: maestra_lupita" autocomplete="off">
-        <small class="form-help">Solo letras, numeros y guion bajo. Se convertira a minusculas.</small>
+               required placeholder="ej: maestra_lupita" autocomplete="off"
+               pattern="[a-zA-Z0-9_.]{3,30}" title="3-30 caracteres: letras, números, punto o guión bajo">
+        <small class="form-help">3–30 caracteres: letras, números, punto o guión bajo. Se convertirá a minúsculas.</small>
       </div>
       {% endif %}
 
@@ -30,11 +31,11 @@
 
       <div class="form-group">
         <label for="password" class="form-label">
-          {{ 'Nueva Contrasena (dejar vacio para no cambiar)' if user else 'Contrasena *' }}
+          {{ 'Nueva Contraseña (dejar vacío para no cambiar)' if user else 'Contraseña *' }}
         </label>
         <input type="password" id="password" name="password" class="form-control"
                {{ '' if user else 'required' }} autocomplete="new-password"
-               placeholder="{{ 'Dejar vacio para mantener' if user else 'Minimo 4 caracteres' }}">
+               placeholder="{{ 'Dejar vacío para mantener' if user else 'Mínimo 4 caracteres' }}">
       </div>
 
       <div class="form-group">

@@ -64,6 +64,15 @@ def create():
             flash("Todos los campos son obligatorios.", "error")
             return render_template("user_form.html", user=None, groups=groups)
 
+        import re
+        if not re.fullmatch(r'[a-z0-9_.]{3,30}', username):
+            flash("El usuario debe tener 3-30 caracteres: letras, números, punto o guión bajo.", "error")
+            return render_template("user_form.html", user=None, groups=groups)
+
+        if len(password) < 4:
+            flash("La contraseña debe tener al menos 4 caracteres.", "error")
+            return render_template("user_form.html", user=None, groups=groups)
+
         # Check unique username
         existing = db.execute(
             "SELECT id FROM users WHERE username = ?", (username,)
@@ -134,6 +143,12 @@ def edit(user_id):
 
         if not full_name:
             flash("El nombre es obligatorio.", "error")
+            return render_template(
+                "user_form.html", user=user, groups=groups, current_groups=current_groups
+            )
+
+        if password and len(password) < 4:
+            flash("La contraseña debe tener al menos 4 caracteres.", "error")
             return render_template(
                 "user_form.html", user=user, groups=groups, current_groups=current_groups
             )

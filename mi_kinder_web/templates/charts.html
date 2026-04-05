@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Graficas - {{ app_name }}{% endblock %}
+{% block title %}Gráficas - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <h1 class="page-title">Graficas</h1>
+  <h1 class="page-title">Gráficas</h1>
 </div>
 
 <!-- Filters -->
@@ -32,29 +32,27 @@
   </div>
 </div>
 
-<!-- Chart containers -->
-<div class="cards-grid">
-  <div class="card">
-    <div class="card-header">
-      <h2 class="card-title">Promedios por Area</h2>
-      <button class="btn btn-sm btn-primary" onclick="loadGroupAverages()">Generar</button>
-    </div>
-    <div class="card-body text-center">
-      <div id="chart-averages" class="chart-container">
-        <p class="text-muted">Selecciona grupo y periodo, luego presiona Generar.</p>
-      </div>
+<!-- Chart containers (full-width stacked for legibility) -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Promedios por Área</h2>
+    <button class="btn btn-sm btn-primary" onclick="loadGroupAverages()">Generar</button>
+  </div>
+  <div class="card-body text-center">
+    <div id="chart-averages" style="min-height: 80px;">
+      <p class="text-muted">Selecciona grupo y periodo, luego presiona Generar.</p>
     </div>
   </div>
+</div>
 
-  <div class="card">
-    <div class="card-header">
-      <h2 class="card-title">Distribucion de Niveles</h2>
-      <button class="btn btn-sm btn-primary" onclick="loadDistribution()">Generar</button>
-    </div>
-    <div class="card-body text-center">
-      <div id="chart-distribution" class="chart-container">
-        <p class="text-muted">Selecciona grupo y periodo, luego presiona Generar.</p>
-      </div>
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">Distribución de Niveles</h2>
+    <button class="btn btn-sm btn-primary" onclick="loadDistribution()">Generar</button>
+  </div>
+  <div class="card-body text-center">
+    <div id="chart-distribution" style="min-height: 80px;">
+      <p class="text-muted">Selecciona grupo y periodo, luego presiona Generar.</p>
     </div>
   </div>
 </div>
@@ -67,6 +65,15 @@
   <div class="card-body">
     <div class="form-row" style="margin-bottom: 1rem;">
       <div class="form-group" style="flex:1;">
+        <label class="form-label">Grupo</label>
+        <select id="att_group" class="form-control">
+          <option value="">-- Seleccionar --</option>
+          {% for g in groups %}
+          <option value="{{ g.id }}">{{ g.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;">
         <label class="form-label">Fecha Inicio</label>
         <input type="date" id="att_start" class="form-control">
       </div>
@@ -78,7 +85,7 @@
         <button class="btn btn-primary" onclick="loadAttendanceChart()">Generar</button>
       </div>
     </div>
-    <div id="chart-attendance" class="chart-container text-center">
+    <div id="chart-attendance" class="text-center" style="min-height: 80px;">
       <p class="text-muted">Selecciona grupo y rango de fechas.</p>
     </div>
   </div>
@@ -97,14 +104,14 @@ function getParams() {
 function showChart(containerId, data) {
   var container = document.getElementById(containerId);
   if (data.image) {
-    container.innerHTML = '<img src="data:image/png;base64,' + data.image + '" style="max-width:100%; height:auto;" alt="Grafica">';
+    container.innerHTML = '<img src="data:image/png;base64,' + data.image + '" style="max-width:100%; height:auto;" alt="Gráfica">';
   } else {
     container.innerHTML = '<p class="text-muted">' + (data.message || 'Sin datos disponibles') + '</p>';
   }
 }
 
 function showLoading(containerId) {
-  document.getElementById(containerId).innerHTML = '<p class="text-muted">Generando grafica...</p>';
+  document.getElementById(containerId).innerHTML = '<p class="text-muted">Generando gráfica...</p>';
 }
 
 function loadGroupAverages() {
@@ -128,7 +135,7 @@ function loadDistribution() {
 }
 
 function loadAttendanceChart() {
-  var groupId = document.getElementById('chart_group').value;
+  var groupId = document.getElementById('att_group').value;
   var start = document.getElementById('att_start').value;
   var end = document.getElementById('att_end').value;
   if (!groupId || !start || !end) { alert('Selecciona grupo y rango de fechas.'); return; }

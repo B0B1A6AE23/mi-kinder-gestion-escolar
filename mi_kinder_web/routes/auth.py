@@ -20,7 +20,7 @@ def login():
         remember = bool(request.form.get("remember_me"))
 
         if not username or not password:
-            flash("Ingresa usuario y contrasena.", "error")
+            flash("Ingresa usuario y contraseña.", "error")
             return render_template("login.html")
 
         db = get_db()
@@ -37,7 +37,7 @@ def login():
             next_page = request.args.get("next")
             return redirect(next_page or url_for("dashboard.index"))
         else:
-            flash("Usuario o contrasena incorrectos.", "error")
+            flash("Usuario o contraseña incorrectos.", "error")
 
     return render_template("login.html")
 
@@ -46,5 +46,5 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash("Sesion cerrada correctamente.", "info")
+    flash("Sesión cerrada correctamente.", "info")
     return redirect(url_for("auth.login"))

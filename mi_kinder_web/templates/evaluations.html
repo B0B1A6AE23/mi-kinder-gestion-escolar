@@ -44,17 +44,17 @@
 
   <div class="card">
     <div class="card-header">
-      <h2 class="card-title">Evaluar ({{ students|length }} alumnos, {{ areas|length }} areas)</h2>
+      <h2 class="card-title">Evaluar ({{ students|length }} {{ 'alumno' if students|length == 1 else 'alumnos' }}, {{ areas|length }} {{ 'área' if areas|length == 1 else 'áreas' }})</h2>
       <button type="submit" class="btn btn-primary">Guardar Evaluaciones</button>
     </div>
     <div class="card-body">
       {% if not areas %}
       <div class="empty-state">
-        <p>No hay areas de evaluacion configuradas. Ve a <a href="{{ url_for('settings.index') }}">Ajustes</a> para crearlas.</p>
+        <p>No hay áreas de evaluación configuradas. Ve a <a href="{{ url_for('settings.index') }}">Ajustes</a> para crearlas.</p>
       </div>
       {% elif not scale_levels %}
       <div class="empty-state">
-        <p>No hay escala de calificacion configurada. Ve a <a href="{{ url_for('settings.index') }}">Ajustes</a>.</p>
+        <p>No hay escala de calificación configurada. Ve a <a href="{{ url_for('settings.index') }}">Ajustes</a>.</p>
       </div>
       {% else %}
 

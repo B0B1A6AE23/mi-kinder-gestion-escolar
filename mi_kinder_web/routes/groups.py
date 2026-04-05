@@ -109,6 +109,35 @@ def create():
     return render_template("group_form.html", group=None, teachers=teachers)
 
 
+@groups_bp.route("/groups/<int:group_id>/delete", methods=["POST"])
+@login_required
+def delete(group_id):
+    if current_user.role != "directora":
+        flash("Solo la directora puede eliminar grupos.", "error")
+        return redirect(url_for("groups.index"))
+
+    db = get_db()
+    group = db.execute("SELECT * FROM groups_ WHERE id = ?", (group_id,)).fetchone()
+    if not group:
+        flash("Grupo no encontrado.", "error")
+        return redirect(url_for("groups.index"))
+
+    active_students = db.execute(
+        "SELECT COUNT(*) as cnt FROM students WHERE group_id = ? AND is_active = 1",
+        (group_id,),
+    ).fetchone()
+
+    if active_students and active_students["cnt"] > 0:
+        flash(f"No se puede eliminar el grupo porque tiene {active_students['cnt']} alumno(s) activo(s).", "error")
+        return redirect(url_for("groups.detail", group_id=group_id))
+
+    db.execute("UPDATE groups_ SET is_active = 0 WHERE id = ?", (group_id,))
+    db.commit()
+
+    flash(f"Grupo '{group['name']}' eliminado.", "success")
+    return redirect(url_for("groups.index"))
+
+
 @groups_bp.route("/groups/<int:group_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit(group_id):
