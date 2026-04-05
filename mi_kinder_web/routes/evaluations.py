@@ -40,7 +40,8 @@ def index():
 
     if selected_group and selected_period:
         students = db.execute(
-            """SELECT s.id, s.first_name, s.last_name, s.second_last_name
+            """SELECT s.id, s.first_name, s.last_name, s.second_last_name,
+                      s.photo_path, s.discapacidad, s.aptitud_sobresaliente, s.condicion_adicional
                FROM students s
                WHERE s.group_id = ? AND s.is_active = 1
                ORDER BY s.last_name, s.first_name""",

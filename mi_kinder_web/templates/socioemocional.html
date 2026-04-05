@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import student_badges %}
 {% block title %}Socioemocional - {{ app_name }}{% endblock %}
 
 {% block content %}
@@ -53,6 +54,7 @@
       <h3 class="card-title">
         {{ s.first_name }} {{ s.last_name }} {{ s.second_last_name or '' }}
       </h3>
+      <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-top:0.2rem;">{{ student_badges(s) }}</div>
     </div>
     <div class="card-body">
       <!-- Existing observations -->

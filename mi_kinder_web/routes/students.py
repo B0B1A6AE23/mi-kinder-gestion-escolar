@@ -256,6 +256,9 @@ def create():
         blood_type = request.form.get("blood_type", "").strip()
         allergies = request.form.get("allergies", "").strip()
         medical_notes = request.form.get("medical_notes", "").strip()
+        discapacidad = ",".join(v for v in request.form.getlist("discapacidad") if v) or None
+        aptitud_sobresaliente = ",".join(v for v in request.form.getlist("aptitud_sobresaliente") if v) or None
+        condicion_adicional = ",".join(v for v in request.form.getlist("condicion_adicional") if v) or None
 
         if not first_name or not last_name or not group_id:
             flash("Nombre, apellido y grupo son obligatorios.", "error")
@@ -292,8 +295,9 @@ def create():
             """INSERT INTO students (group_id, first_name, last_name, second_last_name,
                curp, birth_date, gender, photo_path, enrollment_date,
                guardian_name, guardian_phone, guardian_email, address,
-               blood_type, allergies, medical_notes, guardian_photo_path, is_active)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)""",
+               blood_type, allergies, medical_notes, guardian_photo_path,
+               discapacidad, aptitud_sobresaliente, condicion_adicional, is_active)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)""",
             (
                 group_id, first_name, last_name,
                 second_last_name or None, curp or None,
@@ -303,6 +307,7 @@ def create():
                 guardian_email or None, address or None,
                 blood_type or None, allergies or None,
                 medical_notes or None, guardian_photo_path,
+                discapacidad, aptitud_sobresaliente, condicion_adicional,
             ),
         )
         db.commit()
@@ -367,6 +372,9 @@ def edit(student_id):
         blood_type = request.form.get("blood_type", "").strip()
         allergies = request.form.get("allergies", "").strip()
         medical_notes = request.form.get("medical_notes", "").strip()
+        discapacidad = ",".join(v for v in request.form.getlist("discapacidad") if v) or None
+        aptitud_sobresaliente = ",".join(v for v in request.form.getlist("aptitud_sobresaliente") if v) or None
+        condicion_adicional = ",".join(v for v in request.form.getlist("condicion_adicional") if v) or None
 
         if not first_name or not last_name or not group_id:
             flash("Nombre, apellido y grupo son obligatorios.", "error")
@@ -400,6 +408,7 @@ def edit(student_id):
                second_last_name=?, curp=?, birth_date=?, gender=?, photo_path=?,
                guardian_name=?, guardian_phone=?, guardian_email=?, address=?,
                blood_type=?, allergies=?, medical_notes=?, guardian_photo_path=?,
+               discapacidad=?, aptitud_sobresaliente=?, condicion_adicional=?,
                updated_at=datetime('now') WHERE id=?""",
             (
                 group_id, first_name, last_name,
@@ -408,7 +417,8 @@ def edit(student_id):
                 guardian_name or None, guardian_phone or None,
                 guardian_email or None, address or None,
                 blood_type or None, allergies or None,
-                medical_notes or None, guardian_photo_path, student_id,
+                medical_notes or None, guardian_photo_path,
+                discapacidad, aptitud_sobresaliente, condicion_adicional, student_id,
             ),
         )
         db.commit()

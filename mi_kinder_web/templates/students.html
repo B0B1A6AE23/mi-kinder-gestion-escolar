@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import student_badges %}
 {% block title %}Alumnos - {{ app_name }}{% endblock %}
 
 {% block content %}
@@ -76,6 +77,7 @@
                 <a href="{{ url_for('students.detail', student_id=s.id) }}" class="link-primary">
                   {{ s.last_name }} {{ s.second_last_name or '' }}, {{ s.first_name }}
                 </a>
+                {{ student_badges(s) }}
               </div>
             </td>
             <td><span class="badge badge-outline">{{ s.group_name }}</span></td>

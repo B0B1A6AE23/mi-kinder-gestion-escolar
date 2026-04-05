@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import student_badges %}
 {% block title %}{{ student.first_name }} {{ student.last_name }} - {{ app_name }}{% endblock %}
 
 {% block content %}
@@ -6,7 +7,10 @@
   <div>
     <a href="{{ url_for('students.index') }}" class="btn btn-ghost btn-sm">&larr; Alumnos</a>
     <h1 class="page-title">{{ student.first_name }} {{ student.last_name }} {{ student.second_last_name or '' }}</h1>
-    <p class="page-subtitle">{{ student.group_name }}</p>
+    <p class="page-subtitle" style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
+      {{ student.group_name }}
+      {{ student_badges(student) }}
+    </p>
   </div>
   <div class="header-actions">
     <a href="{{ url_for('students.edit', student_id=student.id) }}" class="btn btn-outline">Editar</a>
@@ -142,6 +146,52 @@
       </dl>
     </div>
   </div>
+
+  <!-- Diversity/Conditions -->
+  {% if student.discapacidad or student.aptitud_sobresaliente or student.condicion_adicional %}
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Atención a la Diversidad</h2>
+    </div>
+    <div class="card-body">
+      <dl class="detail-list">
+        {% if student.discapacidad %}
+        <div class="detail-item">
+          <dt>Discapacidad</dt>
+          <dd style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+            {% set dmap = {'DI':'Intelectual','DM':'Motriz','DA':'Auditiva','DV':'Visual','DPsi':'Psicosocial','DMul':'Múltiple','SC':'Sordoceguera','Otra':'Otra'} %}
+            {% for d in student.discapacidad.split(',') %}
+            <span class="badge" style="background:#EF5350;color:white;">{{ dmap.get(d, d) }} ({{ d }})</span>
+            {% endfor %}
+          </dd>
+        </div>
+        {% endif %}
+        {% if student.aptitud_sobresaliente %}
+        <div class="detail-item">
+          <dt>Aptitud Sobresaliente</dt>
+          <dd style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+            {% set amap = {'AS-Int':'Intelectual','AS-Cre':'Creativa','AS-Art':'Artística','AS-Psi':'Psicomotriz','AS-Soc':'Socioafectiva'} %}
+            {% for a in student.aptitud_sobresaliente.split(',') %}
+            <span class="badge" style="background:#FFA000;color:white;">{{ amap.get(a, a) }}</span>
+            {% endfor %}
+          </dd>
+        </div>
+        {% endif %}
+        {% if student.condicion_adicional %}
+        <div class="detail-item">
+          <dt>Condición Adicional</dt>
+          <dd style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+            {% set cmap = {'TEA':'Trastorno del Espectro Autista','TDAH':'Déf. de Atención e Hiperactividad','DEA':'Dificultad Específica de Aprendizaje','CL':'Comunicación y Lenguaje'} %}
+            {% for c in student.condicion_adicional.split(',') %}
+            <span class="badge" style="background:#7B1FA2;color:white;">{{ c }} — {{ cmap.get(c, c) }}</span>
+            {% endfor %}
+          </dd>
+        </div>
+        {% endif %}
+      </dl>
+    </div>
+  </div>
+  {% endif %}
 
   <!-- Attendance Summary -->
   <div class="card">

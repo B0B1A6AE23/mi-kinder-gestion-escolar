@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import student_badges %}
 {% block title %}{{ 'Editar' if student else 'Nuevo' }} Alumno - {{ app_name }}{% endblock %}
 
 {% block content %}
@@ -161,6 +162,53 @@
         <label for="medical_notes" class="form-label">Notas Médicas</label>
         <textarea id="medical_notes" name="medical_notes" class="form-control" rows="3"
                   placeholder="Condiciones especiales, medicamentos, etc.">{{ student.medical_notes if student else '' }}</textarea>
+      </div>
+
+      <h3 class="form-section-title">Atención a la Diversidad
+        <small style="font-size:0.7rem;font-weight:400;color:var(--ink-light);margin-left:0.5rem;">(SEP / USAER)</small>
+      </h3>
+
+      {% set cur_discap = (student.discapacidad or '').split(',') if student else [] %}
+      {% set cur_aptitud = (student.aptitud_sobresaliente or '').split(',') if student else [] %}
+      {% set cur_condicion = (student.condicion_adicional or '').split(',') if student else [] %}
+
+      <div class="form-row" style="align-items:flex-start;gap:1.5rem;">
+        <div class="form-group" style="flex:1;">
+          <label class="form-label" style="margin-bottom:0.5rem;">Discapacidad</label>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;">
+            {% for val, lbl in [('DI','Intelectual'),('DM','Motriz'),('DA','Auditiva'),('DV','Visual'),('DPsi','Psicosocial'),('DMul','Múltiple'),('SC','Sordoceguera'),('Otra','Otra')] %}
+            <label style="display:flex;align-items:center;gap:0.5rem;font-weight:400;cursor:pointer;">
+              <input type="checkbox" name="discapacidad" value="{{ val }}"
+                     {{ 'checked' if val in cur_discap }}>
+              <span style="font-size:0.85rem;">{{ lbl }} <code style="font-size:0.75rem;opacity:0.7;">({{ val }})</code></span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="form-group" style="flex:1;">
+          <label class="form-label" style="margin-bottom:0.5rem;">Aptitudes Sobresalientes</label>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;">
+            {% for val, lbl in [('AS-Int','Intelectual'),('AS-Cre','Creativa'),('AS-Art','Artística'),('AS-Psi','Psicomotriz'),('AS-Soc','Socioafectiva')] %}
+            <label style="display:flex;align-items:center;gap:0.5rem;font-weight:400;cursor:pointer;">
+              <input type="checkbox" name="aptitud_sobresaliente" value="{{ val }}"
+                     {{ 'checked' if val in cur_aptitud }}>
+              <span style="font-size:0.85rem;">{{ lbl }}</span>
+            </label>
+            {% endfor %}
+          </div>
+
+          <label class="form-label" style="margin-top:1rem;margin-bottom:0.5rem;">Condición Adicional</label>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;">
+            {% for val, lbl in [('TEA','Trastorno del Espectro Autista'),('TDAH','Déf. de Atención e Hiperactividad'),('DEA','Dificultad Específica de Aprendizaje'),('CL','Comunicación y Lenguaje')] %}
+            <label style="display:flex;align-items:center;gap:0.5rem;font-weight:400;cursor:pointer;">
+              <input type="checkbox" name="condicion_adicional" value="{{ val }}"
+                     {{ 'checked' if val in cur_condicion }}>
+              <span style="font-size:0.85rem;"><code style="font-size:0.75rem;">{{ val }}</code> — {{ lbl }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
       </div>
 
       <div class="form-actions">

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import student_badges %}
 {% block title %}Evaluaciones - {{ app_name }}{% endblock %}
 
 {% block content %}
@@ -94,7 +95,10 @@
                     {{ s.first_name[:1] }}
                   </div>
                   {% endif %}
-                  <strong>{{ s.last_name }} {{ s.second_last_name or '' }}, {{ s.first_name }}</strong>
+                  <div>
+                    <strong>{{ s.last_name }} {{ s.second_last_name or '' }}, {{ s.first_name }}</strong>
+                    {{ student_badges(s) }}
+                  </div>
                 </div>
               </td>
               {% for a in areas %}

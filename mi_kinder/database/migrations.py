@@ -2,7 +2,7 @@
 import sqlite3
 from mi_kinder.database.schema import SCHEMA_SQL
 
-CURRENT_VERSION = 2
+CURRENT_VERSION = 3
 
 
 def run_migrations(conn: sqlite3.Connection):
@@ -51,6 +51,15 @@ def _get_migrations() -> list[tuple[int, str, str]]:
             """
 ALTER TABLE users ADD COLUMN photo_path TEXT;
 ALTER TABLE students ADD COLUMN guardian_photo_path TEXT;
+""",
+        ),
+        (
+            3,
+            "Agregar campos de atención a la diversidad SEP",
+            """
+ALTER TABLE students ADD COLUMN discapacidad TEXT;
+ALTER TABLE students ADD COLUMN aptitud_sobresaliente TEXT;
+ALTER TABLE students ADD COLUMN condicion_adicional TEXT;
 """,
         ),
     ]
