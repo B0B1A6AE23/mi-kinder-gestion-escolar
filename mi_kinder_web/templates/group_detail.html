@@ -16,7 +16,7 @@
   <div style="display:flex;gap:var(--sp-2)">
     <a href="{{ url_for('groups.edit', group_id=group.id) }}" class="btn btn-outline">Editar Grupo</a>
     <form method="post" action="{{ url_for('groups.delete', group_id=group.id) }}" style="margin:0">
-      <button type="submit" class="btn btn-outline" style="color:var(--error);border-color:var(--error)"
+      <button type="submit" class="btn btn-error"
               onclick="return confirm('¿Eliminar el grupo {{ group.name }}? Esta acción no se puede deshacer.')">
         Eliminar Grupo
       </button>
