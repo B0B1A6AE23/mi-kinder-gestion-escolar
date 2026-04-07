@@ -147,7 +147,11 @@ def edit(user_id):
 
     if request.method == "POST":
         full_name = request.form.get("full_name", "").strip()
-        role = request.form.get("role", "maestra")
+        # Directoras cannot have their role changed — preserve it always
+        if user["role"] == "directora":
+            role = "directora"
+        else:
+            role = request.form.get("role", "maestra")
         password = request.form.get("password", "").strip()
         is_active = bool(request.form.get("is_active"))
         group_ids = request.form.getlist("group_ids")
