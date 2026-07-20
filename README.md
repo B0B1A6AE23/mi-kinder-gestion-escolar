@@ -32,6 +32,13 @@ externos.
 | --- | --- |
 | ![Reportes](docs/reportes.png) | ![Gráficas](docs/graficas.png) |
 
+| Reporte grupal (ranking) | Boleta generada en **PDF** |
+| --- | --- |
+| ![Reporte grupal](docs/reporte-grupal.png) | ![Boleta PDF](docs/boleta-pdf.png) |
+
+> La última imagen es el **PDF real descargado** desde el sistema (con las firmas de
+> maestra y directora), no una maqueta.
+
 > Las capturas se tomaron con **datos ficticios de demostración**. El sistema real
 > nunca expone información de alumnos en este repositorio (la base de datos vive fuera
 > del proyecto, ver *Privacidad*).
