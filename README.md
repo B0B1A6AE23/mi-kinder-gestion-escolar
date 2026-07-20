@@ -1,3 +1,5 @@
+[English](README.en.md) · **Español**
+
 # Mi Kinder — Sistema de gestión escolar (Colegio CAPI)
 
 ![Flask](https://img.shields.io/badge/Flask-3.0-000000?logo=flask&logoColor=white)
@@ -68,7 +70,7 @@ externos.
 - **Asistencia** diaria por grupo (presente / ausente / retardo / justificada).
 - **Evaluación por áreas** (Lenguaje, Pensamiento Matemático, etc.) con una **escala de
   logro** configurable (Logrado / En Proceso / Requiere Apoyo), por alumno y periodo.
-- **Boletas y reportes** ⭐ — la función central:
+- **Boletas y reportes** — la función central:
   - **Boleta individual**: encabezado del colegio, datos del alumno y matriz de áreas ×
     periodos con el nivel de logro; se visualiza en pantalla y se **descarga en PDF**
     (generado con **fpdf2**).
@@ -144,6 +146,10 @@ ficticios de demostración.
 
 Python · Flask 3 · SQLite (sqlite3) · bcrypt · fpdf2 (PDF) · openpyxl (Excel) ·
 matplotlib (gráficas) · Pillow · Jinja2 · HTML/CSS/JS.
+
+## Licencia
+
+Código bajo licencia [MIT](LICENSE). "Colegio CAPI" se usa como contexto del proyecto; las capturas emplean datos ficticios de demostración (ver *Privacidad*).
 
 ---
 **Ángel Josué García Cantero** · [github.com/AngelJGC](https://github.com/AngelJGC)
