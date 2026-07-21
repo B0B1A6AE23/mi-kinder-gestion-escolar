@@ -12,4 +12,3 @@ build/
 *.sqlite3
 .venv/
 venv/
-.claude/
